@@ -1,223 +1,209 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>ORION • Dashboard de Gestão | AutNew</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<title>ORION • Command Center | AutNew</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: linear-gradient(180deg, #0b1220, #020617);
-      color: #e5e7eb;
-    }
+<style>
+:root{
+  --bg:#020617;
+  --panel:#0b1220;
+  --card:#0f172a;
+  --line:#1e293b;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --accent:#38bdf8;
+  --ok:#22c55e;
+  --lock:#ef4444;
+}
 
-    header {
-      padding: 24px 28px;
-      border-bottom: 1px solid #1f2937;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,system-ui,Segoe UI,Roboto,sans-serif;
+  background:radial-gradient(1200px 600px at top,#0b1220,#020617);
+  color:var(--text);
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 26px;
-      font-weight: 700;
-    }
+/* HEADER */
+header{
+  padding:32px 40px;
+  border-bottom:1px solid var(--line);
+}
+header h1{
+  margin:0;
+  font-size:34px;
+  letter-spacing:.5px;
+}
+header p{
+  margin:6px 0 0;
+  color:var(--muted);
+}
 
-    header span {
-      font-size: 13px;
-      color: #9ca3af;
-    }
+/* LAYOUT */
+main{
+  padding:40px;
+  display:flex;
+  flex-direction:column;
+  gap:40px;
+}
 
-    nav {
-      display: flex;
-      gap: 12px;
-      padding: 12px 28px;
-      border-bottom: 1px solid #1f2937;
-    }
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#0f172a,#020617);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:32px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:24px;
+}
 
-    nav button {
-      background: transparent;
-      border: none;
-      color: #9ca3af;
-      font-size: 14px;
-      cursor: pointer;
-      padding: 8px 14px;
-      border-radius: 8px;
-    }
+.hero .block h3{
+  margin:0;
+  font-size:13px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.hero .block div{
+  margin-top:6px;
+  font-size:22px;
+  font-weight:600;
+}
 
-    nav button.active {
-      background: #1f2937;
-      color: #fff;
-    }
+/* PHASE BAR */
+.phases{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+.phase{
+  padding:20px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:var(--card);
+}
+.phase.active{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(56,189,248,.3);
+}
+.phase h4{margin:0}
+.phase span{
+  font-size:13px;
+  color:var(--muted);
+}
+.phase.locked span{color:var(--lock)}
 
-    main {
-      padding: 28px;
-    }
+/* SECTION */
+section{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:28px;
+}
+section h2{
+  margin:0 0 20px;
+}
 
-    .tab { display: none; }
-    .tab.active { display: block; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
-      background: rgba(17, 24, 39, 0.9);
-      border: 1px solid #1f2937;
-      border-radius: 14px;
-      padding: 18px;
-    }
-
-    .card h3 {
-      margin-top: 0;
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    .ok { color: #22c55e; }
-    .lock { color: #ef4444; }
-
-    pre {
-      background: #020617;
-      padding: 12px;
-      border-radius: 10px;
-      overflow-x: auto;
-      font-size: 12px;
-      color: #cbd5f5;
-      max-height: 300px;
-    }
-  </style>
+/* JSON RENDER */
+pre{
+  background:#020617;
+  padding:20px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  color:#c7d2fe;
+  overflow:auto;
+  max-height:360px;
+  font-size:12px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
   <h1>ORION</h1>
-  <span>Sistema de Gestão e Acompanhamento Geral • AutNew</span>
+  <p>Command Center • Sistema de Gestão e Acompanhamento do AutNew</p>
 </header>
-
-<nav>
-  <button class="active" data-tab="overview">Visão Geral</button>
-  <button data-tab="phases">Fases</button>
-  <button data-tab="data">Dados</button>
-</nav>
 
 <main>
 
-  <!-- VISÃO GERAL -->
-  <section id="overview" class="tab active">
-    <div class="grid">
-      <div class="card">
-        <h3>Projeto</h3>
-        <div id="projectName">—</div>
-      </div>
-      <div class="card">
-        <h3>Fase Atual</h3>
-        <div id="currentPhase">—</div>
-      </div>
-      <div class="card">
-        <h3>Progresso Global</h3>
-        <div id="progress">—</div>
-      </div>
-      <div class="card">
-        <h3>CORE</h3>
-        <div id="coreStatus">—</div>
-      </div>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="block">
+      <h3>Projeto</h3>
+      <div id="projectName">—</div>
     </div>
-
-    <div class="card" style="margin-top:18px">
+    <div class="block">
+      <h3>Fase Atual</h3>
+      <div id="faseAtual">—</div>
+    </div>
+    <div class="block">
+      <h3>Progresso Global</h3>
+      <div id="progresso">—</div>
+    </div>
+    <div class="block">
+      <h3>CORE</h3>
+      <div id="core">—</div>
+    </div>
+    <div class="block">
       <h3>Próximo Passo Permitido</h3>
-      <div id="nextStep">—</div>
+      <div id="next">—</div>
     </div>
+  </div>
+
+  <!-- PHASES -->
+  <div class="phases">
+    <div class="phase active">
+      <h4>Organização</h4>
+      <span>Em andamento</span>
+    </div>
+    <div class="phase locked">
+      <h4>Síntese Estratégica</h4>
+      <span>Bloqueada</span>
+    </div>
+    <div class="phase locked">
+      <h4>Plano Ideal</h4>
+      <span>Bloqueado</span>
+    </div>
+    <div class="phase locked">
+      <h4>Execução</h4>
+      <span>Bloqueada</span>
+    </div>
+  </div>
+
+  <!-- DATA -->
+  <section>
+    <h2>Estado Canônico do Projeto</h2>
+    <pre id="projectState"></pre>
   </section>
 
-  <!-- FASES -->
-  <section id="phases" class="tab">
-    <div class="card">
-      <h3>Organização</h3>
-      <div class="ok">Em andamento</div>
-      <div id="orgDetails"></div>
-    </div>
-
-    <div class="card">
-      <h3>Síntese Estratégica</h3>
-      <div class="lock">Bloqueada</div>
-    </div>
-
-    <div class="card">
-      <h3>Plano Ideal (ORACULUM)</h3>
-      <div class="lock">Bloqueado</div>
-    </div>
-
-    <div class="card">
-      <h3>Execução</h3>
-      <div class="lock">Bloqueada</div>
-    </div>
-  </section>
-
-  <!-- DADOS -->
-  <section id="data" class="tab">
-    <div class="card">
-      <h3>project_state.json</h3>
-      <pre id="projectState">—</pre>
-    </div>
-
-    <div class="card">
-      <h3>timeline.json</h3>
-      <pre id="timeline">—</pre>
-    </div>
-
-    <div class="card">
-      <h3>drive_inventory.json</h3>
-      <span style="color:#9ca3af">Inventário existente (referência)</span>
-    </div>
+  <section>
+    <h2>Linha do Tempo</h2>
+    <pre id="timeline"></pre>
   </section>
 
 </main>
 
 <script>
-  // Tabs
-  document.querySelectorAll('nav button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    });
-  });
+async function loadJSON(p){return fetch(p).then(r=>r.json())}
 
-  async function loadJSON(path) {
-    const res = await fetch(path);
-    return await res.json();
-  }
+async function init(){
+ const project=await loadJSON('data/project_state.json')
+ const timeline=await loadJSON('data/timeline.json')
 
-  async function init() {
-    try {
-      const project = await loadJSON('data/project_state.json');
-      const timeline = await loadJSON('data/timeline.json');
+ projectName.innerText=project.projeto
+ faseAtual.innerText=project.fase_atual
+ progresso.innerText=project.progresso_percentual+'%'
+ core.innerText=project.core_existe?'EXISTE':'NÃO EXISTE'
+ next.innerText=project.proxima_acao
 
-      document.getElementById('projectName').innerText = project.projeto || 'AutNew';
-      document.getElementById('currentPhase').innerText = project.fase_atual || '—';
-      document.getElementById('progress').innerText = (project.progresso_percentual ?? '—') + '%';
-      document.getElementById('coreStatus').innerText = project.core_existe ? 'EXISTE' : 'NÃO EXISTE';
-      document.getElementById('nextStep').innerText = project.proxima_acao || '—';
-
-      document.getElementById('projectState').innerText = JSON.stringify(project, null, 2);
-      document.getElementById('timeline').innerText = JSON.stringify(timeline, null, 2);
-
-      if (project.fases?.organizacao?.etapas_concluidas) {
-        document.getElementById('orgDetails').innerText =
-          'Etapas concluídas: ' + project.fases.organizacao.etapas_concluidas.join(', ');
-      }
-    } catch (e) {
-      console.error('Erro ao carregar dados:', e);
-    }
-  }
-
-  init();
+ projectState.innerText=JSON.stringify(project,null,2)
+ timelineEl=timeline
+ document.getElementById('timeline').innerText=JSON.stringify(timeline,null,2)
+}
+init()
 </script>
 
 </body>
