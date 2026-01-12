@@ -2,10 +2,80 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>ORION</title>
+  <title>ORION | AutNew</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-  <h1>ORION</h1>
-  <p>ORION Web App inicial — GitHub Pages funcionando.</p>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+<div class="max-w-7xl mx-auto p-6">
+
+  <header class="mb-10">
+    <h1 class="text-4xl font-bold">ORION</h1>
+    <p class="text-slate-400">
+      Sistema de Gestão e Acompanhamento Geral — AutNew
+    </p>
+  </header>
+
+  <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+    <div class="bg-slate-800 rounded-xl p-4">
+      <p class="text-sm text-slate-400">Fase Atual</p>
+      <p class="text-xl font-semibold">Organização</p>
+    </div>
+    <div class="bg-slate-800 rounded-xl p-4">
+      <p class="text-sm text-slate-400">Progresso</p>
+      <p class="text-xl font-semibold">20%</p>
+    </div>
+    <div class="bg-slate-800 rounded-xl p-4">
+      <p class="text-sm text-slate-400">Status</p>
+      <p class="text-xl font-semibold text-emerald-400">Ativo</p>
+    </div>
+    <div class="bg-slate-800 rounded-xl p-4">
+      <p class="text-sm text-slate-400">Próxima Ação</p>
+      <p class="text-sm">Finalizar inventário completo</p>
+    </div>
+  </section>
+
+  <section class="bg-slate-800 rounded-xl p-6 mb-10">
+    <h2 class="text-xl font-semibold mb-4">Mapa 360° do Projeto</h2>
+    <ul class="space-y-2 text-sm text-slate-300">
+      <li>1️⃣ Organização — em andamento</li>
+      <li>2️⃣ Leitura + Síntese — pendente</li>
+      <li>3️⃣ CORE — bloqueado</li>
+      <li>4️⃣ Execução — bloqueado</li>
+    </ul>
+  </section>
+
+  <section class="bg-slate-800 rounded-xl p-6 mb-10">
+    <h2 class="text-xl font-semibold mb-4">Progresso Geral</h2>
+    <canvas id="chart" height="120"></canvas>
+  </section>
+
+  <footer class="text-xs text-slate-500 mt-12">
+    ORION v1 • Web App Executivo • AutNew
+  </footer>
+
+</div>
+
+<script>
+new Chart(document.getElementById("chart"), {
+  type: "doughnut",
+  data: {
+    labels: ["Concluído", "Restante"],
+    datasets: [{
+      data: [20, 80],
+      backgroundColor: ["#38bdf8", "#1e293b"]
+    }]
+  },
+  options: { plugins: { legend: { display: false } } }
+});
+</script>
+
 </body>
 </html>
