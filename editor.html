@@ -2,26 +2,76 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>ORION — Editor Estratégico do CORE</title>
+<title>ORION — Visão Estratégica do CORE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="./assets/js/editor-core.js"></script>
 </head>
 
 <body class="bg-slate-900 text-slate-100 min-h-screen">
 
-<header class="max-w-6xl mx-auto px-6 py-8">
-  <h1 class="text-4xl font-bold">ORION</h1>
-  <p class="text-slate-400 mt-2">
-    Editor Estratégico do CORE — Projeto ORACULUM
+<header class="border-b border-slate-700 px-6 py-4">
+  <h1 class="text-3xl font-semibold">ORION</h1>
+  <p class="text-slate-400 text-sm">
+    Governança estratégica do projeto ORACULUM — CORE oficial
   </p>
 </header>
 
-<main class="max-w-6xl mx-auto px-6 space-y-10" id="app"></main>
+<main class="max-w-5xl mx-auto px-6 py-8 space-y-10" id="app"></main>
 
-<footer class="max-w-6xl mx-auto px-6 py-10 text-slate-500 text-sm">
-  ORION é um meta-sistema de governança. Ele não executa — ele acompanha.
+<footer class="border-t border-slate-700 px-6 py-4 text-slate-500 text-sm text-center">
+  ORION é um meta-sistema de governança. Ele não executa o projeto.
 </footer>
+
+<script>
+const CORE_URL = "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/core_oraculum.json";
+
+fetch(CORE_URL)
+  .then(r => r.json())
+  .then(core => {
+    const app = document.getElementById("app");
+
+    core.fases.forEach(fase => {
+      const statusColor = {
+        "ativa": "bg-green-600",
+        "pendente": "bg-blue-600",
+        "bloqueada": "bg-slate-600"
+      }[fase.status] || "bg-slate-600";
+
+      const faseDiv = document.createElement("section");
+      faseDiv.className = "bg-slate-800 rounded-lg p-6 space-y-4";
+
+      faseDiv.innerHTML = `
+        <div class="flex justify-between items-center">
+          <h2 class="text-2xl font-semibold">${fase.nome}</h2>
+          <span class="text-xs px-3 py-1 rounded-full ${statusColor}">
+            ${fase.status}
+          </span>
+        </div>
+
+        <p class="text-slate-300">${fase.objetivo}</p>
+
+        <div class="space-y-4">
+          ${fase.subfases.map(sf => `
+            <div class="border border-slate-700 rounded p-4">
+              <h3 class="font-semibold text-lg mb-2">${sf.nome}</h3>
+              <ul class="list-disc ml-6 text-slate-300 space-y-1">
+                ${sf.itens.map(it => `<li>${it}</li>`).join("")}
+              </ul>
+            </div>
+          `).join("")}
+        </div>
+
+        ${fase.resultado ? `
+          <div class="mt-4 p-4 bg-slate-900 border-l-4 border-green-600 text-slate-300 italic">
+            Resultado: ${fase.resultado}
+          </div>
+        ` : ""}
+      `;
+
+      app.appendChild(faseDiv);
+    });
+  });
+</script>
 
 </body>
 </html>
