@@ -1,5 +1,5 @@
 
-const ORION_VERSION = "v3 | CORE 1.1 | 20260112-1605";
+const ORION_VERSION = "v3 | CORE 1.1 | 20260112-1606";
 
 async function loadCore() {
   const r = await fetch("https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/core_oraculum.json");
