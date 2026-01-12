@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>ORION — AutNew</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="./assets/js/core.js"></script>
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+
+<h1 class="text-4xl font-bold mb-2">ORION</h1>
+<p class="text-slate-400 mb-6">Sistema de Gestão e Acompanhamento Geral</p>
+
+<section id="overview" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></section>
+
+<section>
+  <h2 class="text-xl font-semibold mb-2">Mapa do Projeto (CORE)</h2>
+  <div id="fases" class="space-y-3"></div>
+</section>
+
+<section class="mt-8">
+  <h2 class="text-xl font-semibold mb-2">Último Evento</h2>
+  <pre id="log" class="bg-slate-800 p-4 rounded"></pre>
+</section>
+
+<script>
+(async () => {
+  const core = await load("core");
+  const logs = await load("logs");
+
+  const faseAtual = core.fases.find(f => f.status === "ativa");
+
+  document.getElementById("overview").innerHTML = `
+    <div class="bg-slate-800 p-4 rounded">Projeto<br><b>${core.projeto}</b></div>
+    <div class="bg-slate-800 p-4 rounded">Fase Atual<br><b>${faseAtual.nome}</b></div>
+    <div class="bg-slate-800 p-4 rounded">Status<br><b>${faseAtual.status}</b></div>
+    <div class="bg-slate-800 p-4 rounded">Versão CORE<br><b>${core.versao_core}</b></div>
+  `;
+
+  document.getElementById("fases").innerHTML =
+    core.fases.map(f => `
+      <div class="bg-slate-800 p-4 rounded">
+        <b>${f.nome}</b> — ${f.status}
+        <ul class="ml-4 list-disc text-sm">
+          ${f.subfases.map(s => `<li>${s.nome}</li>`).join("")}
+        </ul>
+      </div>
+    `).join("");
+
+  document.getElementById("log").textContent =
+    JSON.stringify(logs[logs.length - 1], null, 2);
+})();
+</script>
+
+</body>
+</html>
