@@ -1,210 +1,353 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
-<meta charset="UTF-8">
-<title>ORION • Command Center | AutNew</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORION • Command Center</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-<style>
-:root{
-  --bg:#020617;
-  --panel:#0b1220;
-  --card:#0f172a;
-  --line:#1e293b;
-  --text:#e5e7eb;
-  --muted:#94a3b8;
-  --accent:#38bdf8;
-  --ok:#22c55e;
-  --lock:#ef4444;
-}
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'], serif: ['Cinzel', 'serif'] },
+                extend: {
+                    colors: {
+                        void: { 900: '#020617', 800: '#0F172A', 700: '#1E293B' }, // Dark Space
+                        gold: { 400: '#FACC15', 500: '#EAB308', 600: '#CA8A04' }, // Premium accents
+                        neon: { 400: '#38BDF8', 500: '#0EA5E9' } // Tech accents
+                    },
+                    backgroundImage: {
+                        'cosmic-gradient': 'radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%)',
+                        'glass': 'linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%)'
+                    }
+                }
+            }
+        }
+    </script>
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Inter,system-ui,Segoe UI,Roboto,sans-serif;
-  background:radial-gradient(1200px 600px at top,#0b1220,#020617);
-  color:var(--text);
-}
-
-/* HEADER */
-header{
-  padding:32px 40px;
-  border-bottom:1px solid var(--line);
-}
-header h1{
-  margin:0;
-  font-size:34px;
-  letter-spacing:.5px;
-}
-header p{
-  margin:6px 0 0;
-  color:var(--muted);
-}
-
-/* LAYOUT */
-main{
-  padding:40px;
-  display:flex;
-  flex-direction:column;
-  gap:40px;
-}
-
-/* HERO */
-.hero{
-  background:linear-gradient(135deg,#0f172a,#020617);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:32px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:24px;
-}
-
-.hero .block h3{
-  margin:0;
-  font-size:13px;
-  color:var(--muted);
-  text-transform:uppercase;
-}
-.hero .block div{
-  margin-top:6px;
-  font-size:22px;
-  font-weight:600;
-}
-
-/* PHASE BAR */
-.phases{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-}
-.phase{
-  padding:20px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:var(--card);
-}
-.phase.active{
-  border-color:var(--accent);
-  box-shadow:0 0 0 1px rgba(56,189,248,.3);
-}
-.phase h4{margin:0}
-.phase span{
-  font-size:13px;
-  color:var(--muted);
-}
-.phase.locked span{color:var(--lock)}
-
-/* SECTION */
-section{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:28px;
-}
-section h2{
-  margin:0 0 20px;
-}
-
-/* JSON RENDER */
-pre{
-  background:#020617;
-  padding:20px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  color:#c7d2fe;
-  overflow:auto;
-  max-height:360px;
-  font-size:12px;
-}
-</style>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        /* Animations */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-void-900 text-slate-300 font-sans min-h-screen bg-cosmic-gradient selection:bg-gold-500 selection:text-void-900">
 
-<header>
-  <h1>ORION</h1>
-  <p>Command Center • Sistema de Gestão e Acompanhamento do AutNew</p>
-</header>
+    <div id="app" class="max-w-7xl mx-auto p-6 md:p-10 space-y-10">
 
-<main>
+        <div v-if="loading" class="fixed inset-0 flex items-center justify-center bg-void-900 z-50">
+            <div class="flex flex-col items-center gap-4 animate-pulse">
+                <i class="ph ph-planet text-4xl text-gold-400"></i>
+                <span class="font-serif tracking-widest text-sm text-gold-500">CARREGANDO SISTEMA ORION...</span>
+            </div>
+        </div>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="block">
-      <h3>Projeto</h3>
-      <div id="projectName">—</div>
+        <div v-else class="space-y-10 transition-all duration-700 ease-out" :class="{ 'opacity-100 translate-y-0': !loading, 'opacity-0 translate-y-4': loading }">
+            
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-white/5 pb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="ph-fill ph-sparkle text-gold-400 text-2xl"></i>
+                        <h1 class="text-4xl md:text-5xl font-serif text-white tracking-tight">ORION</h1>
+                    </div>
+                    <p class="text-slate-400 text-sm tracking-wide uppercase">Command Center • Automação Cognitiva & Gestão</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full animate-pulse" :class="project?.status === 'Ativo' ? 'bg-green-500' : 'bg-red-500'"></div>
+                        <span class="text-xs font-bold tracking-wider text-white">{{ project?.status || 'OFFLINE' }}</span>
+                    </div>
+                    <div class="text-right hidden md:block">
+                        <div class="text-xs text-slate-500 uppercase">Última Sincronização</div>
+                        <div class="text-xs text-gold-400 font-mono">{{ formatDate(project?.ultima_atualizacao) }}</div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-duotone ph-flag-banner text-6xl text-white"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fase Atual</h3>
+                    <div class="text-2xl text-white font-serif font-bold">{{ project?.fase_atual }}</div>
+                    <div class="mt-2 text-xs text-gold-400 flex items-center gap-1">
+                        <i class="ph-fill ph-lightning"></i>
+                        <span>Em andamento</span>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-duotone ph-chart-donut text-6xl text-white"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Progresso Global</h3>
+                    <div class="text-3xl text-white font-mono font-bold">{{ project?.progresso_percentual }}<span class="text-lg text-slate-500">%</span></div>
+                    <div class="w-full bg-void-900 h-1.5 mt-3 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-gold-600 to-gold-400" :style="`width: ${project?.progresso_percentual}%`"></div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-l-4" :class="coreStatus ? 'border-l-green-500' : 'border-l-slate-700'">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-duotone ph-brain text-6xl text-white"></i>
+                    </div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status do CORE</h3>
+                    <div class="text-xl font-bold flex items-center gap-2" :class="coreStatus ? 'text-green-400' : 'text-slate-400'">
+                        <i :class="coreStatus ? 'ph-check-circle' : 'ph-circle-dashed'"></i>
+                        {{ coreStatus ? 'ATIVO & EXISTENTE' : 'EM CONSTRUÇÃO' }}
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500">
+                        {{ coreStatus ? 'Single Source of Truth operacional.' : 'Aguardando Fase 3.' }}
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-gold-500/30 border">
+                    <div class="absolute inset-0 bg-gold-500/5"></div>
+                    <h3 class="text-xs font-bold text-gold-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-arrow-right"></i> Próximo Passo
+                    </h3>
+                    <div class="text-lg text-white font-medium leading-tight">
+                        {{ project?.proxima_acao || 'Aguardando definição...' }}
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="flex items-center gap-2 mb-6">
+                    <i class="ph-duotone ph-map-trifold text-xl text-slate-400"></i>
+                    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Jornada do Projeto</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div v-for="(phase, index) in phasesConfig" :key="index" 
+                         class="glass-panel p-5 rounded-xl border transition-all duration-300 relative overflow-hidden"
+                         :class="getPhaseClass(phase.name)">
+                        
+                        <div v-if="isPhaseActive(phase.name)" class="absolute top-0 left-0 w-full h-1 bg-gold-500 shadow-[0_0_15px_rgba(234,179,8,0.5)]"></div>
+
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-xs font-mono opacity-50">0{{ index + 1 }}</span>
+                            <i :class="getPhaseIcon(phase.name)" class="text-xl"></i>
+                        </div>
+                        <h4 class="font-serif font-bold text-lg mb-1" :class="isPhaseActive(phase.name) ? 'text-white' : 'text-slate-500'">{{ phase.name }}</h4>
+                        <span class="text-xs uppercase tracking-wider font-bold" :class="getPhaseStatusColor(phase.name)">
+                            {{ getPhaseStatusText(phase.name) }}
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <section class="lg:col-span-2 glass-panel rounded-2xl p-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-duotone ph-clock-counter-clockwise text-xl text-gold-400"></i>
+                            <h2 class="text-lg font-serif text-white">Linha do Tempo</h2>
+                        </div>
+                        <span class="text-xs bg-white/5 border border-white/10 px-2 py-1 rounded text-slate-400">{{ timeline?.length || 0 }} Eventos</span>
+                    </div>
+
+                    <div class="relative space-y-8 pl-4 before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-gradient-to-b before:from-gold-500/50 before:to-transparent">
+                        
+                        <div v-for="(event, idx) in timeline" :key="idx" class="relative pl-8 group">
+                            <div class="absolute left-3 top-1.5 w-3 h-3 rounded-full border-2 border-void-900 shadow-xl z-10 transition-colors duration-300"
+                                 :class="idx === 0 ? 'bg-gold-400 scale-125' : 'bg-slate-700 group-hover:bg-slate-500'"></div>
+                            
+                            <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                                <span class="text-xs font-mono text-gold-500/80">{{ formatDate(event.timestamp) }}</span>
+                                <span class="text-xs border border-white/10 px-1.5 rounded uppercase" :class="getTypeColor(event.tipo)">{{ event.tipo }}</span>
+                            </div>
+                            
+                            <p class="text-slate-300 text-sm leading-relaxed font-medium group-hover:text-white transition-colors">
+                                {{ event.evento }}
+                            </p>
+                            <span class="text-xs text-slate-600 mt-1 block">Fase: {{ event.fase || 'Geral' }}</span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="glass-panel rounded-2xl p-0 overflow-hidden flex flex-col h-full">
+                    <div class="bg-black/40 p-4 border-b border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-bold ph-terminal-window text-neon-400"></i>
+                            <h2 class="text-sm font-mono text-neon-400">SYS.DIAGNOSTICS</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 overflow-auto flex-1 bg-[#050505] font-mono text-xs text-slate-400 leading-relaxed custom-scroll">
+                        <div class="mb-4">
+                            <span class="text-green-500">user@orion:~$</span> check_integrity --target=core<br>
+                            <span class="text-yellow-500">Warning:</span> Full core structure pending synthesis.<br>
+                            <span class="text-green-500">user@orion:~$</span> cat project_state.json
+                        </div>
+                        <pre class="text-blue-300" v-html="syntaxHighlight(project)"></pre>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
     </div>
-    <div class="block">
-      <h3>Fase Atual</h3>
-      <div id="faseAtual">—</div>
-    </div>
-    <div class="block">
-      <h3>Progresso Global</h3>
-      <div id="progresso">—</div>
-    </div>
-    <div class="block">
-      <h3>CORE</h3>
-      <div id="core">—</div>
-    </div>
-    <div class="block">
-      <h3>Próximo Passo Permitido</h3>
-      <div id="next">—</div>
-    </div>
-  </div>
 
-  <!-- PHASES -->
-  <div class="phases">
-    <div class="phase active">
-      <h4>Organização</h4>
-      <span>Em andamento</span>
-    </div>
-    <div class="phase locked">
-      <h4>Síntese Estratégica</h4>
-      <span>Bloqueada</span>
-    </div>
-    <div class="phase locked">
-      <h4>Plano Ideal</h4>
-      <span>Bloqueado</span>
-    </div>
-    <div class="phase locked">
-      <h4>Execução</h4>
-      <span>Bloqueada</span>
-    </div>
-  </div>
+    <script>
+        const { createApp } = Vue
 
-  <!-- DATA -->
-  <section>
-    <h2>Estado Canônico do Projeto</h2>
-    <pre id="projectState"></pre>
-  </section>
+        createApp({
+            data() {
+                return {
+                    loading: true,
+                    project: null,
+                    timeline: [],
+                    phasesConfig: [
+                        { name: 'Organização' },
+                        { name: 'Leitura & Síntese' }, // Adaptado do nome canônico
+                        { name: 'Plano Ideal' },       // Adaptado
+                        { name: 'Execução' }
+                    ]
+                }
+            },
+            computed: {
+                coreStatus() {
+                    // Verifica se o core_existe é true ou se estamos em fase > Organização
+                    return this.project?.core_existe || false
+                }
+            },
+            methods: {
+                async loadData() {
+                    try {
+                        // Tenta carregar os dados reais
+                        const [projRes, timeRes] = await Promise.all([
+                            fetch('data/project_state.json'),
+                            fetch('data/timeline.json')
+                        ]);
 
-  <section>
-    <h2>Linha do Tempo</h2>
-    <pre id="timeline"></pre>
-  </section>
+                        if (!projRes.ok || !timeRes.ok) throw new Error("Falha ao carregar dados do ORION.");
 
-</main>
+                        this.project = await projRes.json();
+                        this.timeline = await timeRes.json();
+                        
+                        // Ordenar timeline do mais recente para o antigo se não estiver
+                        // (Assumindo que o JSON pode vir misturado, mas geralmente append é no fim. Vamos reverter p/ UX)
+                        this.timeline = this.timeline.reverse();
 
-<script>
-async function loadJSON(p){return fetch(p).then(r=>r.json())}
+                    } catch (e) {
+                        console.error(e);
+                        // Mock de Fallback para não quebrar o layout se os arquivos não existirem
+                        this.project = {
+                            projeto: "ORION SYSTEM (OFFLINE)",
+                            fase_atual: "Erro de Conexão",
+                            progresso_percentual: 0,
+                            proxima_acao: "Verificar arquivos JSON em /data",
+                            status: "Erro"
+                        }
+                    } finally {
+                        setTimeout(() => this.loading = false, 800); // Delay cinemático
+                    }
+                },
+                
+                // Helpers de UI
+                formatDate(isoStr) {
+                    if(!isoStr) return '--';
+                    const date = new Date(isoStr);
+                    return new Intl.DateTimeFormat('pt-BR', { 
+                        day: '2-digit', month: '2-digit', hour: '2-digit', minute:'2-digit'
+                    }).format(date);
+                },
+                
+                isPhaseActive(phaseName) {
+                    // Lógica simples de string match. 
+                    // No mundo ideal, usamos IDs, mas aqui vamos pelo nome visual.
+                    if (!this.project) return false;
+                    return this.project.fase_atual.includes(phaseName) || 
+                           (phaseName === 'Organização' && this.project.fase_atual === 'Organização');
+                },
 
-async function init(){
- const project=await loadJSON('data/project_state.json')
- const timeline=await loadJSON('data/timeline.json')
+                getPhaseClass(phaseName) {
+                    if (this.isPhaseActive(phaseName)) return 'bg-white/5 border-gold-500/50 shadow-lg';
+                    // Se a fase atual for "Execução", as anteriores devem parecer "Completas"? 
+                    // Por enquanto, vamos manter simples: Ativa vs Bloqueada
+                    return 'bg-void-800 border-white/5 opacity-50 grayscale';
+                },
 
- projectName.innerText=project.projeto
- faseAtual.innerText=project.fase_atual
- progresso.innerText=project.progresso_percentual+'%'
- core.innerText=project.core_existe?'EXISTE':'NÃO EXISTE'
- next.innerText=project.proxima_acao
+                getPhaseStatusText(phaseName) {
+                    if (this.isPhaseActive(phaseName)) return 'EM ANDAMENTO';
+                    return 'BLOQUEADA'; // Simplificação. Poderia ser "CONCLUÍDA" se tivéssemos histórico de fases.
+                },
 
- projectState.innerText=JSON.stringify(project,null,2)
- timelineEl=timeline
- document.getElementById('timeline').innerText=JSON.stringify(timeline,null,2)
-}
-init()
-</script>
+                getPhaseStatusColor(phaseName) {
+                    if (this.isPhaseActive(phaseName)) return 'text-gold-400';
+                    return 'text-red-500/70';
+                },
 
+                getPhaseIcon(phaseName) {
+                    const icons = {
+                        'Organização': 'ph-duotone ph-files',
+                        'Leitura & Síntese': 'ph-duotone ph-book-open-text',
+                        'Plano Ideal': 'ph-duotone ph-compass',
+                        'Execução': 'ph-duotone ph-rocket-launch'
+                    };
+                    return icons[phaseName] || 'ph-circle';
+                },
+
+                getTypeColor(type) {
+                    const colors = {
+                        'sistema': 'text-neon-400 border-neon-400/30',
+                        'decisao': 'text-purple-400 border-purple-400/30',
+                        'manual': 'text-slate-400 border-slate-400/30'
+                    };
+                    return colors[type] || 'text-slate-400';
+                },
+
+                syntaxHighlight(json) {
+                    if (!json) return '';
+                    let str = JSON.stringify(json, undefined, 2);
+                    str = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    return str.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                        let cls = 'text-purple-400'; // number
+                        if (/^"/.test(match)) {
+                            if (/:$/.test(match)) {
+                                cls = 'text-blue-400 font-bold'; // key
+                            } else {
+                                cls = 'text-green-400'; // string
+                            }
+                        } else if (/true|false/.test(match)) {
+                            cls = 'text-orange-400'; // boolean
+                        } else if (/null/.test(match)) {
+                            cls = 'text-gray-500'; // null
+                        }
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    });
+                }
+            },
+            mounted() {
+                this.loadData();
+            }
+        }).mount('#app')
+    </script>
 </body>
 </html>
