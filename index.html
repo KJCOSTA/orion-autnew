@@ -25,6 +25,9 @@
                     backgroundImage: {
                         'cosmic-gradient': 'radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%)',
                         'glass': 'linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%)'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }
                 }
             }
@@ -38,10 +41,7 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        /* Animations */
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
-        
+        /* Glassmorphism Classes */
         .glass-panel {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
@@ -54,12 +54,12 @@
 
 <body class="bg-void-900 text-slate-300 font-sans min-h-screen bg-cosmic-gradient selection:bg-gold-500 selection:text-void-900">
 
-    <div id="app" class="max-w-7xl mx-auto p-6 md:p-10 space-y-10">
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-10 space-y-10">
 
         <div v-if="loading" class="fixed inset-0 flex items-center justify-center bg-void-900 z-50">
-            <div class="flex flex-col items-center gap-4 animate-pulse">
-                <i class="ph ph-planet text-4xl text-gold-400"></i>
-                <span class="font-serif tracking-widest text-sm text-gold-500">CARREGANDO SISTEMA ORION...</span>
+            <div class="flex flex-col items-center gap-4 animate-pulse-slow">
+                <i class="ph-fill ph-planet text-6xl text-gold-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]"></i>
+                <span class="font-serif tracking-[0.3em] text-xs text-gold-500 uppercase">Inicializando Orion System v3...</span>
             </div>
         </div>
 
@@ -71,27 +71,28 @@
                         <i class="ph-fill ph-sparkle text-gold-400 text-2xl"></i>
                         <h1 class="text-4xl md:text-5xl font-serif text-white tracking-tight">ORION</h1>
                     </div>
-                    <p class="text-slate-400 text-sm tracking-wide uppercase">Command Center • Automação Cognitiva & Gestão</p>
+                    <p class="text-slate-400 text-xs md:text-sm tracking-wide uppercase font-medium">Command Center • Automação Cognitiva & Gestão</p>
                 </div>
                 
                 <div class="flex items-center gap-4">
-                    <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full animate-pulse" :class="project?.status === 'Ativo' ? 'bg-green-500' : 'bg-red-500'"></div>
+                    <div class="px-4 py-2 rounded-full border border-white/10 bg-white/5 flex items-center gap-2 hover:bg-white/10 transition-colors">
+                        <div class="w-2 h-2 rounded-full animate-pulse" :class="project?.status === 'Ativo' ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'"></div>
                         <span class="text-xs font-bold tracking-wider text-white">{{ project?.status || 'OFFLINE' }}</span>
                     </div>
-                    <div class="text-right hidden md:block">
-                        <div class="text-xs text-slate-500 uppercase">Última Sincronização</div>
+                    <div class="text-right hidden md:block border-l border-white/10 pl-4">
+                        <div class="text-[10px] text-slate-500 uppercase tracking-widest">Última Sincronização</div>
                         <div class="text-xs text-gold-400 font-mono">{{ formatDate(project?.ultima_atualizacao) }}</div>
                     </div>
                 </div>
             </header>
 
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i class="ph-duotone ph-flag-banner text-6xl text-white"></i>
+                
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-white/10 transition-colors">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity rotate-12">
+                        <i class="ph-duotone ph-flag-banner text-7xl text-white"></i>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Fase Atual</h3>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Fase Atual</h3>
                     <div class="text-2xl text-white font-serif font-bold">{{ project?.fase_atual }}</div>
                     <div class="mt-2 text-xs text-gold-400 flex items-center gap-1">
                         <i class="ph-fill ph-lightning"></i>
@@ -99,61 +100,61 @@
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group hover:border-white/10 transition-colors">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i class="ph-duotone ph-chart-donut text-6xl text-white"></i>
+                        <i class="ph-duotone ph-chart-donut text-7xl text-white"></i>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Progresso Global</h3>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Progresso Global</h3>
                     <div class="text-3xl text-white font-mono font-bold">{{ project?.progresso_percentual }}<span class="text-lg text-slate-500">%</span></div>
-                    <div class="w-full bg-void-900 h-1.5 mt-3 rounded-full overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-gold-600 to-gold-400" :style="`width: ${project?.progresso_percentual}%`"></div>
+                    <div class="w-full bg-void-900 h-1.5 mt-4 rounded-full overflow-hidden border border-white/5">
+                        <div class="h-full bg-gradient-to-r from-gold-600 to-gold-400 shadow-[0_0_10px_rgba(250,204,21,0.4)] transition-all duration-1000" :style="`width: ${project?.progresso_percentual}%`"></div>
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-l-4" :class="coreStatus ? 'border-l-green-500' : 'border-l-slate-700'">
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-l-4 transition-all" :class="coreStatus ? 'border-l-green-500' : 'border-l-slate-700'">
                     <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <i class="ph-duotone ph-brain text-6xl text-white"></i>
+                        <i class="ph-duotone ph-brain text-7xl text-white"></i>
                     </div>
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status do CORE</h3>
-                    <div class="text-xl font-bold flex items-center gap-2" :class="coreStatus ? 'text-green-400' : 'text-slate-400'">
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Status do CORE</h3>
+                    <div class="text-lg font-bold flex items-center gap-2" :class="coreStatus ? 'text-green-400' : 'text-slate-400'">
                         <i :class="coreStatus ? 'ph-check-circle' : 'ph-circle-dashed'"></i>
                         {{ coreStatus ? 'ATIVO & EXISTENTE' : 'EM CONSTRUÇÃO' }}
                     </div>
-                    <div class="mt-2 text-xs text-slate-500">
+                    <div class="mt-2 text-[10px] text-slate-500 uppercase tracking-wide">
                         {{ coreStatus ? 'Single Source of Truth operacional.' : 'Aguardando Fase 3.' }}
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border-gold-500/30 border">
-                    <div class="absolute inset-0 bg-gold-500/5"></div>
-                    <h3 class="text-xs font-bold text-gold-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden group border border-gold-500/30 shadow-[0_0_20px_rgba(234,179,8,0.05)]">
+                    <div class="absolute inset-0 bg-gold-500/5 group-hover:bg-gold-500/10 transition-colors"></div>
+                    <h3 class="text-[10px] font-bold text-gold-500 uppercase tracking-widest mb-3 flex items-center gap-2">
                         <i class="ph-fill ph-arrow-right"></i> Próximo Passo
                     </h3>
-                    <div class="text-lg text-white font-medium leading-tight">
+                    <div class="text-lg text-white font-medium leading-snug">
                         {{ project?.proxima_acao || 'Aguardando definição...' }}
                     </div>
                 </div>
             </section>
 
             <section>
-                <div class="flex items-center gap-2 mb-6">
-                    <i class="ph-duotone ph-map-trifold text-xl text-slate-400"></i>
+                <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                    <i class="ph-duotone ph-map-trifold text-xl text-gold-400"></i>
                     <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest">Jornada do Projeto</h2>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div v-for="(phase, index) in phasesConfig" :key="index" 
-                         class="glass-panel p-5 rounded-xl border transition-all duration-300 relative overflow-hidden"
+                         class="glass-panel p-6 rounded-xl border transition-all duration-500 relative overflow-hidden group"
                          :class="getPhaseClass(phase.name)">
                         
-                        <div v-if="isPhaseActive(phase.name)" class="absolute top-0 left-0 w-full h-1 bg-gold-500 shadow-[0_0_15px_rgba(234,179,8,0.5)]"></div>
+                        <div v-if="isPhaseActive(phase.name)" class="absolute top-0 left-0 w-full h-1 bg-gold-500 shadow-[0_0_15px_rgba(234,179,8,0.8)]"></div>
 
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-xs font-mono opacity-50">0{{ index + 1 }}</span>
-                            <i :class="getPhaseIcon(phase.name)" class="text-xl"></i>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-mono opacity-40">0{{ index + 1 }}</span>
+                            <i :class="getPhaseIcon(phase.name)" class="text-2xl transition-transform group-hover:scale-110 duration-300"></i>
                         </div>
-                        <h4 class="font-serif font-bold text-lg mb-1" :class="isPhaseActive(phase.name) ? 'text-white' : 'text-slate-500'">{{ phase.name }}</h4>
-                        <span class="text-xs uppercase tracking-wider font-bold" :class="getPhaseStatusColor(phase.name)">
+                        <h4 class="font-serif font-bold text-lg mb-2" :class="isPhaseActive(phase.name) ? 'text-white' : 'text-slate-500'">{{ phase.name }}</h4>
+                        <span class="text-[10px] uppercase tracking-widest font-bold border px-2 py-1 rounded" :class="getPhaseStatusStyle(phase.name)">
                             {{ getPhaseStatusText(phase.name) }}
                         </span>
                     </div>
@@ -164,46 +165,50 @@
                 
                 <section class="lg:col-span-2 glass-panel rounded-2xl p-8">
                     <div class="flex items-center justify-between mb-8">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-3">
                             <i class="ph-duotone ph-clock-counter-clockwise text-xl text-gold-400"></i>
                             <h2 class="text-lg font-serif text-white">Linha do Tempo</h2>
                         </div>
-                        <span class="text-xs bg-white/5 border border-white/10 px-2 py-1 rounded text-slate-400">{{ timeline?.length || 0 }} Eventos</span>
+                        <span class="text-xs bg-void-800 border border-white/10 px-3 py-1 rounded-full text-slate-400 font-mono">{{ timeline?.length || 0 }} Eventos</span>
                     </div>
 
                     <div class="relative space-y-8 pl-4 before:content-[''] before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-gradient-to-b before:from-gold-500/50 before:to-transparent">
                         
                         <div v-for="(event, idx) in timeline" :key="idx" class="relative pl-8 group">
-                            <div class="absolute left-3 top-1.5 w-3 h-3 rounded-full border-2 border-void-900 shadow-xl z-10 transition-colors duration-300"
-                                 :class="idx === 0 ? 'bg-gold-400 scale-125' : 'bg-slate-700 group-hover:bg-slate-500'"></div>
+                            <div class="absolute left-3 top-1.5 w-3 h-3 rounded-full border-2 border-void-900 shadow-xl z-10 transition-all duration-300"
+                                 :class="idx === 0 ? 'bg-gold-400 scale-125 shadow-[0_0_10px_rgba(250,204,21,0.6)]' : 'bg-slate-700 group-hover:bg-slate-500'"></div>
                             
                             <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
                                 <span class="text-xs font-mono text-gold-500/80">{{ formatDate(event.timestamp) }}</span>
-                                <span class="text-xs border border-white/10 px-1.5 rounded uppercase" :class="getTypeColor(event.tipo)">{{ event.tipo }}</span>
+                                <span class="text-[10px] border border-white/10 px-1.5 py-0.5 rounded uppercase tracking-wider" :class="getTypeColor(event.tipo)">{{ event.tipo }}</span>
                             </div>
                             
                             <p class="text-slate-300 text-sm leading-relaxed font-medium group-hover:text-white transition-colors">
                                 {{ event.evento }}
                             </p>
-                            <span class="text-xs text-slate-600 mt-1 block">Fase: {{ event.fase || 'Geral' }}</span>
+                            <span class="text-[10px] text-slate-600 mt-1 block uppercase tracking-wide">Fase: {{ event.fase || 'Geral' }}</span>
                         </div>
-
                     </div>
                 </section>
 
-                <section class="glass-panel rounded-2xl p-0 overflow-hidden flex flex-col h-full">
-                    <div class="bg-black/40 p-4 border-b border-white/5 flex items-center justify-between">
+                <section class="glass-panel rounded-2xl p-0 overflow-hidden flex flex-col h-full border border-white/5">
+                    <div class="bg-black/60 p-4 border-b border-white/5 flex items-center justify-between backdrop-blur-md">
                         <div class="flex items-center gap-2">
                             <i class="ph-bold ph-terminal-window text-neon-400"></i>
-                            <h2 class="text-sm font-mono text-neon-400">SYS.DIAGNOSTICS</h2>
+                            <h2 class="text-xs font-mono text-neon-400 uppercase tracking-widest">SYS.DIAGNOSTICS</h2>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></div>
                         </div>
                     </div>
                     
-                    <div class="p-4 overflow-auto flex-1 bg-[#050505] font-mono text-xs text-slate-400 leading-relaxed custom-scroll">
+                    <div class="p-6 overflow-auto flex-1 bg-[#050505] font-mono text-[11px] text-slate-400 leading-relaxed custom-scroll">
                         <div class="mb-4">
-                            <span class="text-green-500">user@orion:~$</span> check_integrity --target=core<br>
+                            <span class="text-green-500">root@orion:~$</span> ./check_integrity --target=core<br>
                             <span class="text-yellow-500">Warning:</span> Full core structure pending synthesis.<br>
-                            <span class="text-green-500">user@orion:~$</span> cat project_state.json
+                            <span class="text-green-500">root@orion:~$</span> cat /data/project_state.json
                         </div>
                         <pre class="text-blue-300" v-html="syntaxHighlight(project)"></pre>
                     </div>
@@ -223,85 +228,91 @@
                     loading: true,
                     project: null,
                     timeline: [],
+                    // Definição Estática das Fases para montar a UI
                     phasesConfig: [
                         { name: 'Organização' },
-                        { name: 'Leitura & Síntese' }, // Adaptado do nome canônico
-                        { name: 'Plano Ideal' },       // Adaptado
+                        { name: 'Leitura & Síntese' }, // Match com seu JSON
+                        { name: 'Plano Ideal' },       
                         { name: 'Execução' }
                     ]
                 }
             },
             computed: {
                 coreStatus() {
-                    // Verifica se o core_existe é true ou se estamos em fase > Organização
+                    // Retorna true se core_existe for verdadeiro
                     return this.project?.core_existe || false
                 }
             },
             methods: {
                 async loadData() {
                     try {
-                        // Tenta carregar os dados reais
+                        console.log("Iniciando conexão com a Base de Dados...");
+                        
+                        // FETCH PARALELO PARA VELOCIDADE
                         const [projRes, timeRes] = await Promise.all([
                             fetch('data/project_state.json'),
                             fetch('data/timeline.json')
                         ]);
 
-                        if (!projRes.ok || !timeRes.ok) throw new Error("Falha ao carregar dados do ORION.");
+                        if (!projRes.ok || !timeRes.ok) throw new Error("Falha de conexão com os JSONs.");
 
                         this.project = await projRes.json();
                         this.timeline = await timeRes.json();
                         
-                        // Ordenar timeline do mais recente para o antigo se não estiver
-                        // (Assumindo que o JSON pode vir misturado, mas geralmente append é no fim. Vamos reverter p/ UX)
+                        // Garante ordem cronológica inversa (mais novo primeiro)
+                        // Ajuste conforme a ordem que seus arquivos salvam
                         this.timeline = this.timeline.reverse();
 
                     } catch (e) {
-                        console.error(e);
-                        // Mock de Fallback para não quebrar o layout se os arquivos não existirem
+                        console.error("ERRO CRÍTICO:", e);
+                        // DADOS DE FALLBACK (Para não quebrar o layout se não achar o arquivo)
                         this.project = {
-                            projeto: "ORION SYSTEM (OFFLINE)",
-                            fase_atual: "Erro de Conexão",
+                            projeto: "ERRO DE LEITURA",
+                            fase_atual: "Desconectado",
                             progresso_percentual: 0,
-                            proxima_acao: "Verificar arquivos JSON em /data",
-                            status: "Erro"
+                            proxima_acao: "Verificar se pasta /data existe",
+                            status: "Erro",
+                            ultima_atualizacao: new Date().toISOString()
                         }
                     } finally {
-                        setTimeout(() => this.loading = false, 800); // Delay cinemático
+                        // Delay artificial pequeno para dar sensação de "processamento" premium
+                        setTimeout(() => this.loading = false, 1200); 
                     }
                 },
                 
-                // Helpers de UI
+                // Formata Data ISO para PT-BR
                 formatDate(isoStr) {
-                    if(!isoStr) return '--';
-                    const date = new Date(isoStr);
-                    return new Intl.DateTimeFormat('pt-BR', { 
-                        day: '2-digit', month: '2-digit', hour: '2-digit', minute:'2-digit'
-                    }).format(date);
+                    if(!isoStr) return '--/-- --:--';
+                    try {
+                        const date = new Date(isoStr);
+                        return new Intl.DateTimeFormat('pt-BR', { 
+                            day: '2-digit', month: '2-digit', hour: '2-digit', minute:'2-digit'
+                        }).format(date);
+                    } catch(e) { return isoStr; }
                 },
                 
+                // Verifica se a fase está ativa
                 isPhaseActive(phaseName) {
-                    // Lógica simples de string match. 
-                    // No mundo ideal, usamos IDs, mas aqui vamos pelo nome visual.
                     if (!this.project) return false;
+                    // Lógica flexível: contém o nome OU é igual
                     return this.project.fase_atual.includes(phaseName) || 
                            (phaseName === 'Organização' && this.project.fase_atual === 'Organização');
                 },
 
+                // Classes CSS dinâmicas para os cards de fase
                 getPhaseClass(phaseName) {
                     if (this.isPhaseActive(phaseName)) return 'bg-white/5 border-gold-500/50 shadow-lg';
-                    // Se a fase atual for "Execução", as anteriores devem parecer "Completas"? 
-                    // Por enquanto, vamos manter simples: Ativa vs Bloqueada
-                    return 'bg-void-800 border-white/5 opacity-50 grayscale';
+                    return 'bg-void-800 border-white/5 opacity-40 grayscale blur-[1px] hover:blur-0 hover:opacity-70';
                 },
 
                 getPhaseStatusText(phaseName) {
                     if (this.isPhaseActive(phaseName)) return 'EM ANDAMENTO';
-                    return 'BLOQUEADA'; // Simplificação. Poderia ser "CONCLUÍDA" se tivéssemos histórico de fases.
+                    return 'BLOQUEADA';
                 },
 
-                getPhaseStatusColor(phaseName) {
-                    if (this.isPhaseActive(phaseName)) return 'text-gold-400';
-                    return 'text-red-500/70';
+                getPhaseStatusStyle(phaseName) {
+                    if (this.isPhaseActive(phaseName)) return 'text-gold-400 border-gold-500/30 bg-gold-500/10';
+                    return 'text-red-500/70 border-red-500/20 bg-red-500/5';
                 },
 
                 getPhaseIcon(phaseName) {
@@ -314,15 +325,17 @@
                     return icons[phaseName] || 'ph-circle';
                 },
 
+                // Cores dos tipos de evento na timeline
                 getTypeColor(type) {
                     const colors = {
-                        'sistema': 'text-neon-400 border-neon-400/30',
-                        'decisao': 'text-purple-400 border-purple-400/30',
-                        'manual': 'text-slate-400 border-slate-400/30'
+                        'sistema': 'text-neon-400 border-neon-400/30 bg-neon-400/5',
+                        'decisao': 'text-purple-400 border-purple-400/30 bg-purple-400/5',
+                        'manual': 'text-slate-400 border-slate-400/30 bg-white/5'
                     };
                     return colors[type] || 'text-slate-400';
                 },
 
+                // Função Hackerman para colorir o JSON
                 syntaxHighlight(json) {
                     if (!json) return '';
                     let str = JSON.stringify(json, undefined, 2);
