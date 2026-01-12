@@ -2,95 +2,124 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<title>ORION — Editor do CORE</title>
+<title>ORION - Editor do CORE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-slate-900 text-slate-100 min-h-screen p-6">
 
-<h1 class="text-3xl font-bold mb-4">Editor do CORE — ORION</h1>
+<header class="mb-6">
+  <h1 class="text-3xl font-bold">ORION - Editor do CORE</h1>
+  <p class="text-slate-400">
+    Governança estratégica do projeto ORACULUM
+  </p>
+</header>
 
-<textarea id="editor"
-  class="w-full h-[60vh] bg-slate-800 text-sm p-4 rounded mb-4 font-mono"></textarea>
+<div id="fases" class="space-y-4 mb-6"></div>
 
-<button onclick="saveCore()"
-  class="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded font-semibold">
-  💾 Salvar CORE
-</button>
-
-<pre id="status" class="mt-4 text-sm text-slate-400"></pre>
+<div class="flex gap-4">
+  <button onclick="saveCore()"
+    class="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded font-semibold">
+    Salvar CORE
+  </button>
+  <span id="status" class="text-sm text-slate-400 self-center"></span>
+</div>
 
 <script>
 const RAW_CORE =
   "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/core_oraculum.json";
 
+let CORE = null;
+
 async function loadCore() {
   const res = await fetch(RAW_CORE);
-  const json = await res.json();
-  document.getElementById("editor").value =
-    JSON.stringify(json, null, 2);
+  CORE = await res.json();
+  render();
+}
+
+function render() {
+  const container = document.getElementById("fases");
+  container.innerHTML = "";
+
+  CORE.fases.forEach((fase, i) => {
+    const card = document.createElement("div");
+    card.className = "bg-slate-800 p-4 rounded space-y-2";
+
+    card.innerHTML = `
+      <div class="flex justify-between items-center">
+        <input class="bg-slate-700 p-2 rounded w-2/3"
+          value="${fase.nome}"
+          onchange="CORE.fases[${i}].nome = this.value" />
+        <select class="bg-slate-700 p-2 rounded"
+          onchange="CORE.fases[${i}].status = this.value">
+          ${["ativa","pendente","bloqueada"].map(s =>
+            `<option ${fase.status===s?"selected":""}>${s}</option>`
+          ).join("")}
+        </select>
+      </div>
+
+      <textarea class="w-full bg-slate-700 p-2 rounded text-sm"
+        placeholder="Objetivo da fase"
+        onchange="CORE.fases[${i}].objetivo = this.value">${fase.objetivo || ""}</textarea>
+
+      <div class="ml-4">
+        <p class="text-sm font-semibold mb-1">Subfases</p>
+        ${(fase.subfases||[]).map((s,j)=>`
+          <div class="flex gap-2 mb-1">
+            <input class="bg-slate-700 p-1 rounded flex-1"
+              value="${s.nome}"
+              onchange="CORE.fases[${i}].subfases[${j}].nome = this.value"/>
+            <button onclick="CORE.fases[${i}].subfases.splice(${j},1);render()"
+              class="text-red-400">✕</button>
+          </div>
+        `).join("")}
+        <button onclick="addSubfase(${i})"
+          class="text-emerald-400 text-sm mt-1">+ adicionar subfase</button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function addSubfase(i) {
+  CORE.fases[i].subfases = CORE.fases[i].subfases || [];
+  CORE.fases[i].subfases.push({ nome: "Nova subfase" });
+  render();
 }
 
 async function saveCore() {
   const token = prompt("Cole seu GitHub Token (repo):");
   if (!token) return;
 
-  const content = document.getElementById("editor").value;
-  const core = JSON.parse(content);
-
-  const apiBase =
-    "https://api.github.com/repos/KJCOSTA/orion-data/contents";
+  const api =
+    "https://api.github.com/repos/KJCOSTA/orion-data/contents/data/core_oraculum.json";
 
   const headers = {
     "Authorization": "Bearer " + token,
     "Accept": "application/vnd.github+json"
   };
 
-  // 1️⃣ Atualiza core_oraculum.json
-  const shaRes = await fetch(
-    apiBase + "/data/core_oraculum.json",
-    { headers }
-  );
-  const shaJson = await shaRes.json();
+  const meta = await fetch(api, { headers });
+  const json = await meta.json();
 
-  await fetch(apiBase + "/data/core_oraculum.json", {
+  const content = btoa(
+    unescape(encodeURIComponent(JSON.stringify(CORE, null, 2)))
+  );
+
+  const resp = await fetch(api, {
     method: "PUT",
     headers,
     body: JSON.stringify({
-      message: "ORION: atualiza CORE via editor",
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(core, null, 2)))),
-      sha: shaJson.sha
-    })
-  });
-
-  // 2️⃣ Adiciona log
-  const logRes = await fetch(
-    apiBase + "/logs/orion_logs.json",
-    { headers }
-  );
-  const logJson = await logRes.json();
-  const logs = JSON.parse(atob(logJson.content));
-
-  logs.push({
-    timestamp: new Date().toISOString(),
-    tipo: "editor",
-    mensagem: "CORE atualizado via editor visual",
-    fase: core.fases.find(f => f.status === "ativa")?.nome || "-"
-  });
-
-  await fetch(apiBase + "/logs/orion_logs.json", {
-    method: "PUT",
-    headers,
-    body: JSON.stringify({
-      message: "ORION: log de atualização do CORE",
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(logs, null, 2)))),
-      sha: logJson.sha
+      message: "ORION: atualiza CORE via editor v2",
+      content,
+      sha: json.sha
     })
   });
 
   document.getElementById("status").textContent =
-    "✅ CORE salvo com sucesso no orion-data";
+    resp.ok ? "CORE salvo com sucesso." : "Erro ao salvar CORE.";
 }
 
 loadCore();
