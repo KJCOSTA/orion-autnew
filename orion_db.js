@@ -1,57 +1,40 @@
-// MEMÓRIA DO ORION SYSTEM (V4 MODULAR)
-// Este arquivo alimenta o Dashboard HTML.
-// Gerado com base no Estado Canônico Atual.
+// ORION DATABASE | v7.0 | BLUE NEBULA EDITION
+// Gerado automaticamente com base no Estado Canônico (Fase 1)
 
 window.ORION_DB = {
     "meta": {
-        "versao": "4.0 Modular (Architect Edition)",
-        "atualizado_em": new Date().toLocaleDateString('pt-BR') + " " + new Date().toLocaleTimeString('pt-BR'),
-        "ambiente": "PRODUÇÃO"
+        "versao": "V7.0 (Blue Nebula)",
+        "build": "2026.01.12.RC",
+        "ambiente": "PRODUÇÃO (SECURE)"
     },
     "kpis": {
-        "progresso": 62.5,      // Status real da Fase 1
-        "arquivos": 5114,       // Inventário Global
-        "decisoes": 1,          // Decisão de Arquitetura registrada
-        "status_core": "INEXISTENTE" // Conforme Estado Canônico
-    },
-    "links": {
-        // Link genérico para a raiz do seu Drive
-        "drive_root": "https://drive.google.com/drive/u/0/"
+        "fase_nome": "1. ORGANIZAÇÃO",
+        "progresso": 62.5,
+        "total_arquivos": 5114,
+        "decisoes_registradas": 1,
+        "status_core": "INEXISTENTE", // Bloqueio lógico
+        "status_sistema": "ONLINE"
     },
     "timeline": [
-        { "data": "12/01", "hora": "17:50", "evento": "Dashboard V4 Modular Ativado", "tipo": "SYSTEM" },
-        { "data": "12/01", "hora": "14:02", "evento": "Inventário Global: 5.114 arquivos processados", "tipo": "DATA" },
-        { "data": "12/01", "hora": "13:55", "evento": "Estado Canônico definido como Autoridade Máxima", "tipo": "DECISION" },
-        { "data": "12/01", "hora": "11:07", "evento": "Inicialização do Sistema ORION", "tipo": "START" }
+        { "hora": "14:02", "tipo": "DATA", "msg": "Inventário Global finalizado (5.114 itens)." },
+        { "hora": "13:55", "tipo": "CRITICAL", "msg": "Estado Canônico definido como Autoridade Máxima." },
+        { "hora": "11:07", "tipo": "SYSTEM", "msg": "Inicialização do Sistema ORION." },
+        { "hora": "10:30", "tipo": "INFO", "msg": "Estrutura de pastas /AutNew criada." }
     ],
-    "arquivos_recentes": [
-        { 
-            "nome": "Orion — Estado Canônico De Contexto.pdf", 
-            "tipo": "PDF", 
-            "caminho": "/AutNew/ORACULUM/", 
-            "status": "MASTER" 
-        },
-        { 
-            "nome": "core_oraculum.json", 
-            "tipo": "JSON", 
-            "caminho": "/AutNew/ORION/data/", 
-            "status": "PENDING" 
-        },
-        { 
-            "nome": "LOG_TECNICO_AUTNEW.md", 
-            "tipo": "MD", 
-            "caminho": "/AutNew/__LOGS__/", 
-            "status": "LIVE" 
-        },
-        { 
-            "nome": "MAPA_GLOBAL_DRIVE.json", 
-            "tipo": "JSON", 
-            "caminho": "/AutNew/__LOGS__/", 
-            "status": "DATA" 
-        }
+    "arquivos": [
+        { "nome": "Orion — Estado Canônico.pdf", "tipo": "PDF", "caminho": "/AutNew/ORACULUM/", "tag": "MASTER" },
+        { "nome": "core_oraculum.json", "tipo": "JSON", "caminho": "/AutNew/ORION/data/", "tag": "PENDING" },
+        { "nome": "LOG_TECNICO_AUTNEW.md", "tipo": "MD", "caminho": "/AutNew/__LOGS__/", "tag": "LIVE" },
+        { "nome": "MAPA_GLOBAL_DRIVE.json", "tipo": "JSON", "caminho": "/AutNew/__LOGS__/", "tag": "DATA" },
+        { "nome": "timeline.json", "tipo": "JSON", "caminho": "/AutNew/ORION/data/", "tag": "SYSTEM" },
+        { "nome": "project_state.json", "tipo": "JSON", "caminho": "/AutNew/ORION/data/", "tag": "SYSTEM" },
+        { "nome": "decisions.json", "tipo": "JSON", "caminho": "/AutNew/ORION/data/", "tag": "CORE" },
+        { "nome": "drive_inventory.json", "tipo": "JSON", "caminho": "/AutNew/ORION/data/", "tag": "DATA" },
+        { "nome": "Orion_Concept.docx", "tipo": "DOCX", "caminho": "/AutNew/ORACULUM/", "tag": "OLD" },
+        { "nome": "Main_Script_V1.py", "tipo": "PY", "caminho": "/Colab Notebooks/", "tag": "CODE" }
     ],
-    "stats_grafico": {
-        "labels": ["Markdown (.md)", "JSON (.json)", "Python (.py)", "Docs/PDF", "Imagens"],
-        "data": [4949, 25, 33, 107, 0] // Dados reais extraídos do inventário
+    "grafico": {
+        "labels": ["Markdown (.md)", "JSON (.json)", "Python (.py)", "PDF/Docs", "Outros"],
+        "dados": [4949, 25, 33, 107, 50]
     }
 };
