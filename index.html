@@ -1,393 +1,307 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ORION • Command Center (Blueprint Edition)</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                fontFamily: { 
-                    sans: ['Inter', 'sans-serif'], 
-                    serif: ['Cinzel', 'serif'],
-                    mono: ['"JetBrains Mono"', 'monospace']
-                },
-                extend: {
-                    colors: {
-                        deep: { 900: '#020617', 800: '#0f172a', 700: '#1e293b' }, // O Azul Profundo Original
-                        gold: { 300: '#fde047', 400: '#facc15', 500: '#eab308' },
-                        cyan: { 400: '#22d3ee', 500: '#06b6d4', 600: '#0891b2' },
-                        neon: { blue: '#3b82f6', purple: '#8b5cf6' }
-                    },
-                    backgroundImage: {
-                        'cosmic-blue': 'radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 80%)',
-                        'glass-card': 'linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)',
-                        'shine': 'linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.05) 50%, transparent 75%)'
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-glow': 'pulseGlow 3s infinite',
-                        'enter': 'enter 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards'
-                    },
-                    keyframes: {
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
-                        pulseGlow: { '0%, 100%': { boxShadow: '0 0 5px rgba(34, 211, 238, 0.1)' }, '50%': { boxShadow: '0 0 20px rgba(34, 211, 238, 0.3)' } },
-                        enter: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORION SYSTEM | AutNew Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* ESTILOS GERAIS */
-        body { background-color: #020617; overflow-x: hidden; color: #e2e8f0; }
-        
-        /* SCROLLBAR PREMIUM */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #020617; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
-
-        /* GLASSMORPHISM BLUE (O SEGREDO) */
-        .glass {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
+        :root {
+            --bg-deep: #020617;
+            --glass: rgba(255, 255, 255, 0.05);
+            --gold: #EAB308;
+            --gold-dim: rgba(234, 179, 8, 0.2);
+            --neon-green: #22c55e;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: 1px solid rgba(234, 179, 8, 0.3);
         }
-        .glass:hover {
-            border-color: rgba(34, 211, 238, 0.3); /* Cyan Glow on Hover */
-            box-shadow: 0 10px 40px -10px rgba(6, 182, 212, 0.15);
-            transform: translateY(-2px);
+        
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #020617 60%);
+            min-height: 100vh;
         }
 
-        /* TEXT EFFECTS */
-        .text-gradient-gold { background: linear-gradient(to right, #facc15, #eab308); -webkit-background-clip: text; color: transparent; }
-        .text-gradient-cyan { background: linear-gradient(to right, #22d3ee, #06b6d4); -webkit-background-clip: text; color: transparent; }
-        .glow-gold { text-shadow: 0 0 20px rgba(234, 179, 8, 0.4); }
-        
-        /* LOADER ORB */
-        .orb {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #22d3ee, #000);
-            box-shadow: 0 0 40px #22d3ee;
-            animation: spin 3s linear infinite;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .brand h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            margin: 0;
+            font-size: 2rem;
+            text-shadow: 0 0 10px var(--gold-dim);
+        }
+
+        .brand span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            background: var(--glass);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .metric {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .sub-metric {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            margin-top: 0;
+            border-bottom: 1px solid var(--glass);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item {
+            border-left: 2px solid var(--gold);
+            padding-left: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            background: var(--bg-deep);
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+        }
+
+        .timestamp {
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-family: 'Courier New', monospace;
+        }
+
+        .event-content {
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        .json-display {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #a5b4fc;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
         }
     </style>
 </head>
+<body>
 
-<body class="antialiased selection:bg-cyan-500 selection:text-black">
+    <div class="header">
+        <div class="brand">
+            <h1>ORION SYSTEM</h1>
+            <span>AutNew Project Governance | V9 Ultimate</span>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span>ONLINE • Ativo</span>
+        </div>
+    </div>
 
-    <div id="app" class="relative min-h-screen flex flex-col">
-        
-        <div class="fixed inset-0 bg-cosmic-blue z-0"></div>
-        <canvas id="neural" class="fixed inset-0 z-0 opacity-40 pointer-events-none"></canvas>
-        
-        <transition name="fade">
-            <div v-if="loading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#020617]">
-                <div class="orb mb-8"></div>
-                <h1 class="font-serif text-5xl text-white tracking-[0.4em] animate-pulse glow-gold">ORION</h1>
-                <div class="flex items-center gap-2 mt-4 text-cyan-400 font-mono text-xs uppercase tracking-widest">
-                    <span class="animate-pulse">●</span> Conectando Base de Dados...
-                </div>
+    <div class="grid-container">
+        <div class="card">
+            <h3>Fase Atual</h3>
+            <div class="metric">Organização</div>
+            <div class="sub-metric">Progresso: 15%</div>
+        </div>
+        <div class="card">
+            <h3>Arquivos Indexados</h3>
+            <div class="metric">5114</div>
+            <div class="sub-metric">Inventário Completo</div>
+        </div>
+        <div class="card">
+            <h3>Decisões Críticas</h3>
+            <div class="metric">1</div>
+            <div class="sub-metric">Registradas no Core</div>
+        </div>
+        <div class="card">
+            <h3>Próxima Ação</h3>
+            <div style="font-size: 1.1rem; color: var(--text-main); font-weight: 600;">
+                Finalizar inventário completo
             </div>
-        </transition>
+        </div>
+    </div>
 
-        <div v-else class="relative z-10 flex-1 w-full max-w-[1600px] mx-auto p-4 md:p-8 animate-enter">
-
-            <header class="glass rounded-2xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-5 w-full md:w-auto">
-                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-white/10 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.2)]">
-                        <i class="ph-fill ph-planet text-3xl text-cyan-400"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-3xl font-serif text-white tracking-wide">
-                            ORION <span class="text-cyan-400 font-light">BLUEPRINT</span>
-                        </h1>
-                        <div class="flex gap-3 text-[10px] font-bold uppercase tracking-widest mt-1">
-                            <span class="text-gold-400 flex items-center gap-1"><i class="ph-fill ph-crown"></i> Plano Diamante V9</span>
-                            <span class="text-slate-500">|</span>
-                            <span class="text-green-400 flex items-center gap-1"><i class="ph-fill ph-circle"></i> Online</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex bg-deep-800/50 p-1 rounded-lg border border-white/5 w-full md:w-auto overflow-x-auto">
-                    <button @click="tab = 'dashboard'" :class="tab==='dashboard'?'bg-cyan-500 text-black shadow-lg':'text-slate-400 hover:text-white'" class="flex-1 md:flex-none px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap">Dashboard</button>
-                    <button @click="tab = 'files'" :class="tab==='files'?'bg-cyan-500 text-black shadow-lg':'text-slate-400 hover:text-white'" class="flex-1 md:flex-none px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap">Arquivos</button>
-                    <button @click="tab = 'timeline'" :class="tab==='timeline'?'bg-cyan-500 text-black shadow-lg':'text-slate-400 hover:text-white'" class="flex-1 md:flex-none px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap">Timeline</button>
-                </div>
-            </header>
-
-            <div v-if="tab === 'dashboard'" class="space-y-6 animate-enter">
-                
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <div class="col-span-1 md:col-span-6 lg:col-span-6 glass rounded-2xl p-8 relative overflow-hidden group">
-                        <div class="absolute -right-6 -top-6 text-gold-500/5 text-9xl group-hover:scale-110 transition-transform"><i class="ph-fill ph-flag-banner"></i></div>
-                        
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 class="text-xs font-bold text-gold-400 uppercase tracking-[0.2em] mb-1">Fase Operacional</h3>
-                                <div class="text-4xl md:text-5xl font-serif font-bold text-white text-shadow-sm">{{ project.fase_atual }}</div>
-                            </div>
-                            <div class="w-12 h-12 rounded-full border-2 border-gold-500/30 flex items-center justify-center text-gold-400 font-bold text-sm">
-                                {{ project.progresso_percentual }}%
-                            </div>
-                        </div>
-
-                        <div class="relative w-full h-4 bg-deep-900 rounded-full overflow-hidden border border-white/10 shadow-inner">
-                            <div class="absolute h-full bg-gradient-to-r from-gold-600 via-gold-400 to-white w-[42%] shadow-[0_0_20px_#facc15] animate-pulse"></div>
-                            <div class="absolute h-full w-[1px] bg-black/50 left-[25%]"></div>
-                            <div class="absolute h-full w-[1px] bg-black/50 left-[50%]"></div>
-                            <div class="absolute h-full w-[1px] bg-black/50 left-[75%]"></div>
-                        </div>
-                        <div class="flex justify-between mt-2 text-[9px] font-mono text-slate-500 uppercase">
-                            <span>Inventário</span>
-                            <span>Síntese</span>
-                            <span>Plano</span>
-                            <span>Execução</span>
-                        </div>
-                    </div>
-
-                    <div class="col-span-1 md:col-span-6 lg:col-span-3 glass rounded-2xl p-6 flex flex-col justify-between border-t-2 border-t-cyan-500">
-                        <div>
-                            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                <i class="ph-bold ph-lightning"></i> Próxima Ação
-                            </h3>
-                            <p class="text-lg text-white font-medium leading-relaxed">
-                                "{{ project.proxima_acao }}"
-                            </p>
-                        </div>
-                        <div class="mt-4 p-3 bg-cyan-500/10 rounded-lg border border-cyan-500/20 text-cyan-300 text-xs font-mono">
-                            > STATUS: AGUARDANDO<br>
-                            > PRIORITY: HIGH
-                        </div>
-                    </div>
-
-                    <div class="col-span-1 md:col-span-6 lg:col-span-3 grid grid-rows-2 gap-6">
-                        <div class="glass rounded-2xl p-4 flex items-center gap-4 relative overflow-hidden">
-                            <div class="absolute inset-0 bg-red-500/5 animate-pulse" v-if="!project.core_existe"></div>
-                            <div class="w-12 h-12 rounded-lg bg-deep-900 flex items-center justify-center border border-white/10">
-                                <i class="ph-duotone ph-brain text-2xl" :class="project.core_existe ? 'text-green-500' : 'text-red-500'"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xs font-bold text-slate-400 uppercase">Status do Core</h3>
-                                <div class="text-lg font-bold text-white">{{ project.core_existe ? 'Sintetizado' : 'Não Existe' }}</div>
-                            </div>
-                        </div>
-                        <div class="glass rounded-2xl p-4 flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-lg bg-deep-900 flex items-center justify-center border border-white/10">
-                                <i class="ph-duotone ph-files text-2xl text-purple-400"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xs font-bold text-slate-400 uppercase">Ativos Totais</h3>
-                                <div class="text-lg font-bold text-white">{{ inventory.length }} Arquivos</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="glass rounded-2xl p-6 border-l-4 border-l-purple-500 hover:bg-purple-900/10 transition-colors">
-                        <div class="flex items-center gap-3 mb-3">
-                            <i class="ph-fill ph-scroll text-purple-400 text-xl"></i>
-                            <h2 class="text-lg font-serif font-bold text-white">ORACULUM</h2>
-                        </div>
-                        <p class="text-sm text-slate-400 leading-relaxed">
-                            O mapa estratégico mestre. Define o "O QUE" e o "PORQUÊ". É a constituição imutável que guia o projeto. Não é software, é visão.
-                        </p>
-                    </div>
-                    <div class="glass rounded-2xl p-6 border-l-4 border-l-gold-500 hover:bg-gold-900/10 transition-colors">
-                        <div class="flex items-center gap-3 mb-3">
-                            <i class="ph-fill ph-cpu text-gold-400 text-xl"></i>
-                            <h2 class="text-lg font-serif font-bold text-white">ORION</h2>
-                        </div>
-                        <p class="text-sm text-slate-400 leading-relaxed">
-                            O sistema operacional tático. É a ferramenta que você usa agora. Organiza, audita e executa. Garante a obediência ao Oraculum.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="glass rounded-2xl p-6">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Módulos Conectados</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="p-3 bg-deep-900 rounded-lg border border-white/10 flex items-center gap-3">
-                            <i class="ph-fill ph-youtube-logo text-red-500 text-xl"></i>
-                            <span class="text-xs font-bold text-white">YouTube API v3</span>
-                        </div>
-                        <div class="p-3 bg-deep-900 rounded-lg border border-white/10 flex items-center gap-3">
-                            <i class="ph-fill ph-infinity text-purple-500 text-xl"></i>
-                            <span class="text-xs font-bold text-white">Make.com</span>
-                        </div>
-                        <div class="p-3 bg-deep-900 rounded-lg border border-white/10 flex items-center gap-3">
-                            <i class="ph-fill ph-sparkle text-blue-400 text-xl"></i>
-                            <span class="text-xs font-bold text-white">Gemini Pro 1.5</span>
-                        </div>
-                        <div class="p-3 bg-deep-900 rounded-lg border border-white/10 flex items-center gap-3">
-                            <i class="ph-fill ph-hard-drives text-green-400 text-xl"></i>
-                            <span class="text-xs font-bold text-white">Google Drive</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div v-if="tab === 'files'" class="space-y-6 animate-enter">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-serif text-white">Inventário de Arquivos</h2>
-                    <input type="text" placeholder="Buscar..." class="bg-deep-900 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-cyan-500 focus:outline-none w-48">
-                </div>
-
-                <div class="glass rounded-2xl overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-deep-800 text-[10px] uppercase text-slate-400 font-bold border-b border-white/10">
-                            <tr>
-                                <th class="p-4 pl-6">Tipo</th>
-                                <th class="p-4">Arquivo</th>
-                                <th class="p-4 hidden md:table-cell">Caminho</th>
-                                <th class="p-4 text-right pr-6">Data</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm divide-y divide-white/5">
-                            <tr v-for="file in inventory" :key="file.path" class="hover:bg-white/5 transition-colors group cursor-pointer">
-                                <td class="p-4 pl-6 w-16">
-                                    <div class="w-10 h-10 rounded bg-deep-900 border border-white/10 flex items-center justify-center text-lg group-hover:border-cyan-500/50 group-hover:shadow-[0_0_10px_rgba(34,211,238,0.2)] transition-all">
-                                        <i :class="getFileIcon(file.extension)"></i>
-                                    </div>
-                                </td>
-                                <td class="p-4">
-                                    <div class="font-bold text-white group-hover:text-cyan-400 transition-colors">{{ file.nome }}</div>
-                                    <div class="text-[10px] text-slate-500 md:hidden">{{ file.path }}</div>
-                                </td>
-                                <td class="p-4 text-xs font-mono text-slate-500 hidden md:table-cell">{{ file.path }}</td>
-                                <td class="p-4 text-right text-xs font-mono text-slate-400 pr-6">{{ formatDate(file.last_modified) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div v-if="tab === 'timeline'" class="animate-enter">
-                <div class="glass rounded-2xl p-8">
-                    <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8 border-b border-white/10 pb-4">Registro de Eventos</h2>
-                    <div class="relative pl-6 space-y-12 before:absolute before:left-[23px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-cyan-500 before:to-transparent">
-                        <div v-for="(event, idx) in timeline" :key="idx" class="relative pl-10 group">
-                            <div class="absolute left-[16px] top-1.5 w-4 h-4 rounded-full border-4 border-deep-900 z-10 transition-transform group-hover:scale-125"
-                                 :class="idx === 0 ? 'bg-cyan-400 shadow-[0_0_15px_#22d3ee]' : 'bg-slate-600'"></div>
-                            
-                            <div class="flex items-center gap-3 mb-1">
-                                <span class="text-xs font-mono text-cyan-400">{{ formatDateFull(event.timestamp) }}</span>
-                                <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded border border-white/10 text-slate-400 bg-white/5">{{ event.tipo }}</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-white mb-1 group-hover:text-cyan-300 transition-colors">{{ event.evento }}</h3>
-                            <p class="text-xs text-slate-500">Log registrado via {{ event.origem || 'Sistema Central' }}</p>
+    <div class="main-layout">
+        <div>
+            <div class="card">
+                <h2 class="section-title">Timeline & Eventos</h2>
+                <div id="timeline-container">
+                    <div class="timeline-item">
+                        <div class="timestamp">2026-01-12</div>
+                        <div class="event-content">
+                            <strong>SISTEMA:</strong> ORION v1 inicializado
                         </div>
                     </div>
                 </div>
             </div>
 
-            <footer class="mt-12 border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 opacity-70">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center text-white font-serif font-bold text-xs shadow-lg">K</div>
-                    <div>
-                        <div class="text-xs font-bold text-white tracking-widest">KLEITON JATOBÁ</div>
-                        <div class="text-[8px] uppercase text-cyan-500">Chief Intelligence Officer</div>
-                    </div>
+            <div class="card" style="margin-top: 20px;">
+                <h2 class="section-title">Database Core (JSON)</h2>
+                <div class="json-display">
+{
+  "meta": {
+    "versao": "Diamante V9 Ultimate",
+    "gerado_em": "2026-01-12T17:30:00"
+  },
+  "state": {
+    "fase_atual": "Organização",
+    "progresso": 15,
+    "status": "Ativo",
+    "proxima_acao": "Finalizar inventário completo"
+  },
+  "stats": {
+    "total_files": 5114,
+    "top_types": {".md": 4949, ".json": 25, ".py": 33}
+  },
+  "timeline": [
+    {"timestamp": "2026-01-12T11:07:28", "tipo": "SISTEMA", "evento": "ORION v1 inicializado"}
+  ],
+  "decisions": [
+    {"decisao": "Separar frontend de dados", "impacto": "Alta estabilidade"}
+  ]
+}
                 </div>
-                <div class="text-[10px] font-mono text-slate-500 bg-deep-800 px-3 py-1 rounded border border-white/5">
-                    SYNC: {{ project.ultima_atualizacao }} • <span class="text-green-500">SECURE CONNECTED</span>
-                </div>
-            </footer>
+            </div>
+        </div>
 
+        <div>
+            <div class="card">
+                <h2 class="section-title">Distribuição de Arquivos</h2>
+                <div class="chart-container">
+                    <canvas id="filesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <h2 class="section-title">Log de Decisões</h2>
+                <ul id="decisions-list" style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 15px;">
+                        <div style="color: var(--gold); font-size: 0.8rem;">2026-01-12</div>
+                        <div style="font-weight: 600;">Separar frontend de dados</div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem;">Impacto: Alta estabilidade</div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('neural');
-        const ctx = canvas.getContext('2d');
-        let width, height, nodes = [];
-
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Node {
-            constructor() { this.x = Math.random()*width; this.y = Math.random()*height; this.vx = (Math.random()-0.5)*0.5; this.vy = (Math.random()-0.5)*0.5; }
-            update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>width)this.vx*=-1; if(this.y<0||this.y>height)this.vy*=-1; }
-            draw() { ctx.fillStyle = '#22d3ee'; ctx.beginPath(); ctx.arc(this.x, this.y, 1.5, 0, Math.PI*2); ctx.fill(); }
-        }
-        for(let i=0; i<60; i++) nodes.push(new Node());
-        function animate() {
-            ctx.clearRect(0,0,width,height);
-            nodes.forEach((node, i) => {
-                node.update(); node.draw();
-                for(let j=i+1; j<nodes.length; j++) {
-                    let d = Math.hypot(node.x-nodes[j].x, node.y-nodes[j].y);
-                    if(d<150) { ctx.strokeStyle = `rgba(34, 211, 238, ${1 - d/150})`; ctx.beginPath(); ctx.moveTo(node.x, node.y); ctx.lineTo(nodes[j].x, nodes[j].y); ctx.stroke(); }
-                }
-            });
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        const { createApp } = Vue;
-        createApp({
-            data() {
-                return {
-                    loading: true,
-                    tab: 'dashboard',
-                    // DADOS EXTRAÍDOS DO SEU CONTEXTO REAL (GARANTIA DE FUNCIONAMENTO)
-                    project: {
-                        fase_atual: "Organização",
-                        progresso_percentual: 42,
-                        proxima_acao: "Inclusão Manual (Etapa 1.6)",
-                        core_existe: false,
-                        ultima_atualizacao: new Date().toISOString()
-                    },
-                    inventory: [
-                        { nome: "PLANO DIAMANTE V9.0 (ULTIMATE).gdoc", path: "/AutNew/01_MANUAIS_E_PLANOS/", extension: "gdoc", last_modified: "2026-01-10T14:20:00" },
-                        { nome: "00_CEREBRO_MESTRE_IA.md", path: "/AutNew/LOGS/", extension: "md", last_modified: "2026-01-12T03:54:00" },
-                        { nome: "ORION_ESTADO_CANONICO_FINAL.pdf", path: "/AutNew/ORION/docs/", extension: "pdf", last_modified: "2026-01-12T15:49:00" },
-                        { nome: "MAPA_GLOBAL_DRIVE.md", path: "/AutNew/__LOGS__/", extension: "md", last_modified: "2026-01-12T04:58:02" },
-                        { nome: "credentials_master.json", path: "/AutNew/00_COFRE/", extension: "json", last_modified: "2026-01-08T09:00:00" },
-                        { nome: "Automatização YouTube com IA.gdoc", path: "/AutNew/99_OUTROS/", extension: "gdoc", last_modified: "2026-01-07T10:00:00" },
-                        { nome: "BLUEPRINT_MAKE_OFFICIAL.pdf", path: "/AutNew/02_TECNICO/", extension: "pdf", last_modified: "2026-01-10T09:30:00" },
-                        { nome: "dashboard_dados.gsheet", path: "/AutNew/__INBOX_AUDITORIA/", extension: "gsheet", last_modified: "2026-01-11T05:26:00" }
-                    ],
-                    timeline: [
-                        { timestamp: new Date().toISOString(), tipo: "SISTEMA", evento: "Upgrade Visual Blueprint V6 Implantado" },
-                        { timestamp: "2026-01-12T18:10:00", tipo: "DECISÃO", evento: "Definição do ORION como Gestor Canônico" },
-                        { timestamp: "2026-01-12T03:55:00", tipo: "AUDITORIA", evento: "Movimentação de Arquivos para Inbox" },
-                        { timestamp: "2026-01-10T14:45:00", tipo: "SISTEMA", evento: "Geração do Cérebro Mestre (4931 Docs)" }
-                    ]
-                }
+        const ctx = document.getElementById('filesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['.md', '.json', '.py', 'Outros'],
+                datasets: [{
+                    data: [4949, 25, 33, 107],
+                    backgroundColor: ['#EAB308', '#22c55e', '#3b82f6', '#64748b'],
+                    borderColor: '#020617',
+                    borderWidth: 2
+                }]
             },
-            methods: {
-                formatDate(iso) { try { return new Date(iso).toLocaleDateString('pt-BR'); } catch(e){return iso} },
-                formatDateFull(iso) { try { const d = new Date(iso); return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}); } catch(e){return iso} },
-                getFileIcon(ext) {
-                    const icons = {
-                        'pdf': 'ph-file-pdf text-red-500', 'gdoc': 'ph-file-doc text-blue-500', 
-                        'gsheet': 'ph-file-xls text-green-500', 'json': 'ph-file-code text-yellow-500',
-                        'md': 'ph-file-text text-white'
-                    };
-                    return icons[ext] || 'ph-file text-slate-500';
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#94a3b8' }
+                    }
                 }
-            },
-            mounted() { setTimeout(() => this.loading = false, 2000); }
-        }).mount('#app')
+            }
+        });
     </script>
 </body>
 </html>
