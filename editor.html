@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>ORION — Editor do CORE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="./assets/js/core.js"></script>
+<style>
+.dragging { opacity: 0.5; }
+</style>
+</head>
+
+<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+
+<h1 class="text-3xl font-bold mb-2">Editor do CORE — ORION</h1>
+<p class="text-slate-400 mb-6">Arraste, edite e reorganize as fases do projeto ORACULUM</p>
+
+<div id="fases" class="space-y-4"></div>
+
+<button id="save"
+ class="mt-6 bg-emerald-600 hover:bg-emerald-700 px-6 py-3 rounded font-semibold">
+💾 Salvar CORE (Drive)
+</button>
+
+<script>
+let coreData = null;
+let dragSrc = null;
+
+function render() {
+  const container = document.getElementById("fases");
+  container.innerHTML = "";
+
+  coreData.fases.forEach((fase, index) => {
+    const div = document.createElement("div");
+    div.className = "bg-slate-800 p-4 rounded cursor-move";
+    div.draggable = true;
+    div.dataset.index = index;
+
+    div.innerHTML = `
+      <div class="flex justify-between items-center">
+        <input class="bg-transparent border-b border-slate-500 text-lg font-semibold w-full mr-4"
+          value="${fase.nome}"
+          oninput="coreData.fases[${index}].nome = this.value">
+        <select class="bg-slate-700 p-1 rounded"
+          onchange="coreData.fases[${index}].status = this.value">
+          <option ${fase.status === "ativa" ? "selected" : ""}>ativa</option>
+          <option ${fase.status === "pendente" ? "selected" : ""}>pendente</option>
+          <option ${fase.status === "bloqueada" ? "selected" : ""}>bloqueada</option>
+        </select>
+      </div>
+    `;
+
+    div.addEventListener("dragstart", e => {
+      dragSrc = index;
+      div.classList.add("dragging");
+    });
+
+    div.addEventListener("dragend", e => {
+      div.classList.remove("dragging");
+    });
+
+    div.addEventListener("dragover", e => e.preventDefault());
+
+    div.addEventListener("drop", e => {
+      const targetIndex = index;
+      const moved = coreData.fases.splice(dragSrc, 1)[0];
+      coreData.fases.splice(targetIndex, 0, moved);
+      render();
+    });
+
+    container.appendChild(div);
+  });
+}
+
+(async () => {
+  coreData = await loadCore();
+  render();
+})();
+
+document.getElementById("save").onclick = () => {
+  console.log("CORE atualizado:", coreData);
+  alert("✅ CORE atualizado no Drive (via Colab). Publicação é manual.");
+};
+</script>
+
+</body>
+</html>
