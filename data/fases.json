@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "nome": "Organização",
+    "status": "ativa"
+  },
+  {
+    "id": 2,
+    "nome": "Leitura + Síntese",
+    "status": "pendente"
+  },
+  {
+    "id": 3,
+    "nome": "CORE",
+    "status": "bloqueada"
+  },
+  {
+    "id": 4,
+    "nome": "Execução",
+    "status": "bloqueada"
+  }
+]
