@@ -1,77 +1,68 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>ORION — Visão Estratégica do CORE</title>
+<title>ORION — Editor do CORE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="assets/js/core.js?v=20260112-1547"></script>
 </head>
 
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+<body class="bg-slate-900 text-slate-100 p-6">
+<h1 class="text-3xl font-bold mb-1">ORION — Editor do CORE</h1>
+<p class="text-slate-400 mb-6">Governança estratégica do projeto ORACULUM</p>
 
-<header class="border-b border-slate-700 px-6 py-4">
-  <h1 class="text-3xl font-semibold">ORION</h1>
-  <p class="text-slate-400 text-sm">
-    Governança estratégica do projeto ORACULUM — CORE oficial
-  </p>
-</header>
+<div id="app" class="space-y-6"></div>
 
-<main class="max-w-5xl mx-auto px-6 py-8 space-y-10" id="app"></main>
+<button onclick="save()" class="bg-green-600 px-4 py-2 rounded">Salvar CORE</button>
 
-<footer class="border-t border-slate-700 px-6 py-4 text-slate-500 text-sm text-center">
-  ORION é um meta-sistema de governança. Ele não executa o projeto.
+<footer class="mt-8 text-xs text-slate-500">
+ORION v3 — CORE 1.1 — 20260112-1547 UTC
 </footer>
 
 <script>
-const CORE_URL = "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/core_oraculum.json";
+let CORE;
 
-fetch(CORE_URL)
-  .then(r => r.json())
-  .then(core => {
-    const app = document.getElementById("app");
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
 
-    core.fases.forEach(fase => {
-      const statusColor = {
-        "ativa": "bg-green-600",
-        "pendente": "bg-blue-600",
-        "bloqueada": "bg-slate-600"
-      }[fase.status] || "bg-slate-600";
+  CORE.fases.forEach((f) => {
+    const box = document.createElement("div");
+    box.className = "bg-slate-800 p-4 rounded";
 
-      const faseDiv = document.createElement("section");
-      faseDiv.className = "bg-slate-800 rounded-lg p-6 space-y-4";
+    box.innerHTML = `
+      <h2 class="text-xl font-semibold mb-2">${f.nome}</h2>
+      <p class="mb-2">${f.objetivo}</p>
+      <span class="text-sm px-2 py-1 bg-green-700 rounded">${f.status}</span>
+    `;
 
-      faseDiv.innerHTML = `
-        <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-semibold">${fase.nome}</h2>
-          <span class="text-xs px-3 py-1 rounded-full ${statusColor}">
-            ${fase.status}
-          </span>
-        </div>
-
-        <p class="text-slate-300">${fase.objetivo}</p>
-
-        <div class="space-y-4">
-          ${fase.subfases.map(sf => `
-            <div class="border border-slate-700 rounded p-4">
-              <h3 class="font-semibold text-lg mb-2">${sf.nome}</h3>
-              <ul class="list-disc ml-6 text-slate-300 space-y-1">
-                ${sf.itens.map(it => `<li>${it}</li>`).join("")}
-              </ul>
-            </div>
-          `).join("")}
-        </div>
-
-        ${fase.resultado ? `
-          <div class="mt-4 p-4 bg-slate-900 border-l-4 border-green-600 text-slate-300 italic">
-            Resultado: ${fase.resultado}
-          </div>
-        ` : ""}
-      `;
-
-      app.appendChild(faseDiv);
+    f.subfases.forEach(sf => {
+      const s = document.createElement("div");
+      s.className = "mt-4 bg-slate-700 p-3 rounded";
+      s.innerHTML = `<b>${sf.nome}</b><ul class="list-disc ml-6"></ul>`;
+      const ul = s.querySelector("ul");
+      sf.itens.forEach(i => {
+        const li = document.createElement("li");
+        li.textContent = i;
+        ul.appendChild(li);
+      });
+      box.appendChild(s);
     });
-  });
-</script>
 
+    app.appendChild(box);
+  });
+}
+
+async function save() {
+  await saveCore(CORE);
+}
+
+loadCore().then(c => {
+  CORE = c;
+  render();
+});
+</script>
 </body>
 </html>
