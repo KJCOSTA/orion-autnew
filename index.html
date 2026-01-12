@@ -2,43 +2,102 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>ORION — AutNew</title>
-<script src="./assets/js/core.js"></script>
-<script src="./assets/libs/echarts.min.js"></script>
+
+<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Charts -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<style>
+:root {
+  --bg: #0b1220;
+  --card: #121c2e;
+  --accent: #38bdf8;
+}
+body { background: var(--bg); }
+</style>
 </head>
-<body class="bg-slate-900 text-white p-6">
 
-<h1 class="text-4xl font-bold">ORION</h1>
-<p class="text-slate-400 mb-6">Sistema de Gestão e Acompanhamento Geral — AutNew</p>
+<body class="text-white">
 
-<div id="cards" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></div>
+<div class="max-w-7xl mx-auto p-6">
 
-<h2 class="text-xl font-semibold mb-2">Mapa 360°</h2>
-<ul id="fases" class="mb-8"></ul>
+<header class="mb-10">
+  <h1 class="text-4xl font-bold">ORION</h1>
+  <p class="text-slate-400">
+    Sistema de Gestão e Acompanhamento Geral — AutNew
+  </p>
+</header>
 
-<h2 class="text-xl font-semibold mb-2">Último Registro</h2>
-<pre id="log"></pre>
+<section id="cards" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10"></section>
+
+<section class="bg-[var(--card)] rounded-xl p-6 mb-10">
+  <h2 class="text-xl font-semibold mb-4">Progresso Geral</h2>
+  <div id="progress"></div>
+</section>
+
+<section class="bg-[var(--card)] rounded-xl p-6 mb-10">
+  <h2 class="text-xl font-semibold mb-4">Mapa 360° do Projeto</h2>
+  <ul id="fases" class="space-y-2"></ul>
+</section>
+
+<section class="bg-[var(--card)] rounded-xl p-6">
+  <h2 class="text-xl font-semibold mb-4">Último Registro</h2>
+  <pre id="log" class="text-sm text-slate-300"></pre>
+</section>
+
+</div>
 
 <script>
+const DATA = {
+  state: "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/project_state.json",
+  fases: "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/fases.json",
+  logs:  "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/logs/orion_logs.json"
+};
+
+async function getJSON(url) {
+  const r = await fetch(url);
+  return r.json();
+}
+
 (async () => {
-  const state = await loadJSON("state");
-  const fases = await loadJSON("fases");
-  const logs = await loadJSON("logs");
+  const state = await getJSON(DATA.state);
+  const fases = await getJSON(DATA.fases);
+  const logs  = await getJSON(DATA.logs);
 
   document.getElementById("cards").innerHTML = `
-    <div class="bg-slate-800 p-4 rounded">Fase<br><b>${state.fase_atual}</b></div>
-    <div class="bg-slate-800 p-4 rounded">Progresso<br><b>${state.progresso_percentual}%</b></div>
-    <div class="bg-slate-800 p-4 rounded">Status<br><b>${state.status}</b></div>
-    <div class="bg-slate-800 p-4 rounded">Próxima ação<br><b>${state.proxima_acao}</b></div>
+    <div class="bg-[var(--card)] p-4 rounded-xl">Fase Atual<br><b>${state.fase_atual}</b></div>
+    <div class="bg-[var(--card)] p-4 rounded-xl">Progresso<br><b>${state.progresso_percentual}%</b></div>
+    <div class="bg-[var(--card)] p-4 rounded-xl">Status<br><b class="text-green-400">${state.status}</b></div>
+    <div class="bg-[var(--card)] p-4 rounded-xl">Próxima Ação<br><b>${state.proxima_acao}</b></div>
   `;
 
   document.getElementById("fases").innerHTML =
-    fases.map(f => `<li>• ${f.fase} — ${f.status}</li>`).join("");
+    fases.map(f =>
+      `<li class="flex justify-between">
+        <span>${f.fase}</span>
+        <span class="text-slate-400">${f.status}</span>
+      </li>`
+    ).join("");
 
   document.getElementById("log").textContent =
     JSON.stringify(logs[logs.length - 1], null, 2);
+
+  new ApexCharts(document.querySelector("#progress"), {
+    chart: { type: "radialBar", height: 300 },
+    series: [state.progresso_percentual],
+    labels: ["Conclusão"],
+    plotOptions: {
+      radialBar: {
+        hollow: { size: "70%" }
+      }
+    },
+    colors: ["#38bdf8"]
+  }).render();
 })();
 </script>
 
