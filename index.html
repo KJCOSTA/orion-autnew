@@ -3,35 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ORION V6 | Etherius Console</title>
+    <title>ORION SYSTEM | V7 Blue Nebula</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Rajdhani:wght@300;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@200;300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script src="orion_db.js" onerror="console.warn('DB não encontrado. Usando Fallback.')"></script>
+    <script src="orion_db.js" onerror="console.warn('DB não encontrado, usando fallback interno.')"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        void: '#000000',
-                        deep: '#030712', // Navy bem escuro
-                        glass: 'rgba(255, 255, 255, 0.03)',
-                        gold: '#FFD700',
-                        cyan: '#00F0FF',
-                        danger: '#FF2A6D',
-                        success: '#05FFA1'
+                        void: '#02040a',
+                        glass: 'rgba(10, 20, 40, 0.7)',
+                        cyan: '#00f2ff',
+                        deepBlue: '#1e3a8a',
+                        gold: '#fbbf24',
+                        alert: '#ef4444'
                     },
                     fontFamily: {
                         serif: ['Cinzel', 'serif'],
-                        tech: ['Rajdhani', 'sans-serif'], // Fonte Sci-Fi
+                        sans: ['Outfit', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     },
-                    backgroundImage: {
-                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+                    animation: {
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'scanline': 'scanline 8s linear infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 5px rgba(0, 242, 255, 0.2)' },
+                            '50%': { boxShadow: '0 0 20px rgba(0, 242, 255, 0.6)' },
+                        },
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' }
+                        }
                     }
                 }
             }
@@ -39,413 +49,353 @@
     </script>
 
     <style>
-        /* --- CORE VISUALS --- */
+        /* --- BACKGROUND FX --- */
         body {
-            background-color: #000;
+            background-color: #02040a;
             color: #e2e8f0;
             overflow: hidden;
-            font-family: 'Rajdhani', sans-serif;
+            /* O Gradiente Azul Profundo que você queria */
+            background-image: 
+                radial-gradient(circle at 50% 0%, #172554 0%, #02040a 60%),
+                radial-gradient(circle at 85% 30%, rgba(0, 242, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 15% 80%, rgba(251, 191, 36, 0.05) 0%, transparent 40%);
         }
 
-        /* Efeito de Partículas (Canvas ficará atrás) */
-        #nebula-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-        }
-
-        /* Scanline CRT Effect */
-        .scanlines {
+        /* GRID OVERLAY */
+        .bg-grid {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
-            background-size: 100% 4px;
-            z-index: 999; pointer-events: none; opacity: 0.3;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none; z-index: -1;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
         }
 
-        /* GLASS FILM CARD (A Película de Vidro) */
+        /* GLASS CARD (PELÍCULA DE VIDRO) */
         .glass-panel {
-            background: rgba(10, 15, 30, 0.6); /* Base escura translúcida */
-            backdrop-filter: blur(20px);         /* Blur pesado */
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08); /* Borda sutil */
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);   /* Sombra profunda */
+            background: rgba(8, 14, 28, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.2); /* Borda de luz superior */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             position: relative;
-            overflow: hidden;
-        }
-        
-        /* Borda Brilhante Superior (Reflexo de Luz) */
-        .glass-panel::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
         }
 
-        /* Ruído de Textura (Realismo) */
-        .texture-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.07"/%3E%3C/svg%3E');
-            pointer-events: none; opacity: 0.4; mix-blend-mode: overlay;
+        .glass-panel:hover {
+            border-color: rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
         }
 
-        /* Scrollbar Cyberpunk */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; }
-        ::-webkit-scrollbar-thumb:hover { background: #FFD700; }
+        /* TEXT GLOWS */
+        .glow-cyan { text-shadow: 0 0 10px rgba(0, 242, 255, 0.7); }
+        .glow-gold { text-shadow: 0 0 10px rgba(251, 191, 36, 0.7); }
 
-        /* Animações */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .blink { animation: blink 2s infinite; }
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #02040a; }
+        ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 3px; }
 
-        .text-glow-gold { text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
-        .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
-
-        .nav-btn { position: relative; overflow: hidden; transition: all 0.3s; }
-        .nav-btn.active { background: rgba(255, 215, 0, 0.1); border-left: 2px solid #FFD700; color: #fff; }
-        .nav-btn:hover:not(.active) { background: rgba(255, 255, 255, 0.05); }
+        /* NAVIGATION */
+        .nav-item { transition: all 0.3s; border-left: 3px solid transparent; }
+        .nav-item.active { background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent); border-left-color: #00f2ff; color: #fff; }
+        .nav-item:hover:not(.active) { background: rgba(255, 255, 255, 0.03); }
 
     </style>
 </head>
-<body class="flex flex-col h-screen antialiased">
+<body class="h-screen flex text-sm selection:bg-cyan selection:text-black">
 
-    <canvas id="nebula-canvas"></canvas>
-    <div class="scanlines"></div>
+    <div class="bg-grid"></div>
 
-    <header class="h-12 border-b border-white/10 bg-black/40 backdrop-blur-md flex justify-between items-center px-6 z-50">
-        <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-diamond text-gold text-xs animate-spin" style="animation-duration: 10s;"></i>
-                <span class="font-serif text-gold tracking-[0.2em] font-bold text-lg text-glow-gold">ORION</span>
-            </div>
-            <div class="h-4 w-px bg-white/10"></div>
-            <div class="text-[10px] font-mono text-cyan tracking-wider flex gap-2">
-                <span>SYS.V6.ETHERIUS</span>
-                <span class="text-slate-500">|</span>
-                <span>SECURE_CONN</span>
+    <aside class="w-72 flex-shrink-0 flex flex-col border-r border-white/5 bg-void/80 backdrop-blur-md z-20">
+        <div class="h-20 flex items-center px-6 border-b border-white/5 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-deepBlue/30 to-transparent"></div>
+            <div class="relative z-10">
+                <h1 class="font-serif text-3xl text-transparent bg-clip-text bg-gradient-to-r from-gold to-amber-600 font-bold tracking-widest drop-shadow-sm">ORION</h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <div class="w-1.5 h-1.5 bg-cyan rounded-full animate-pulse"></div>
+                    <span class="text-[10px] font-mono text-cyan/80 tracking-[0.3em] uppercase">System Online</span>
+                </div>
             </div>
         </div>
-        
-        <div class="flex items-center gap-8 text-[10px] font-mono uppercase text-slate-400">
-            <div class="flex gap-2 items-center">
-                <span>CPU</span>
-                <div class="w-16 h-1 bg-slate-800"><div class="h-full bg-cyan w-[12%] animate-pulse"></div></div>
-                <span class="text-cyan">12%</span>
-            </div>
-            <div class="flex gap-2 items-center">
-                <span>MEM</span>
-                <div class="w-16 h-1 bg-slate-800"><div class="h-full bg-gold w-[45%]"></div></div>
-                <span class="text-gold">4.2GB</span>
-            </div>
-            <div class="text-right">
-                <span id="system-clock" class="text-white font-bold">00:00:00</span>
-            </div>
-        </div>
-    </header>
 
-    <div class="flex flex-1 overflow-hidden z-10">
-        
-        <aside class="w-16 flex flex-col items-center py-6 gap-6 border-r border-white/5 bg-black/20 backdrop-blur-sm">
-            <button onclick="switchView('main')" id="nav-main" class="nav-btn w-10 h-10 rounded flex items-center justify-center text-slate-400 hover:text-gold active" title="Comando Central">
-                <i class="fa-solid fa-grid-2 text-xl"></i>
-            </button>
-            <button onclick="switchView('data')" id="nav-data" class="nav-btn w-10 h-10 rounded flex items-center justify-center text-slate-400 hover:text-cyan" title="Inventário">
-                <i class="fa-solid fa-database text-xl"></i>
-            </button>
-            <button onclick="switchView('audit')" id="nav-audit" class="nav-btn w-10 h-10 rounded flex items-center justify-center text-slate-400 hover:text-success" title="Auditoria">
-                <i class="fa-solid fa-list-check text-xl"></i>
-            </button>
-            <div class="mt-auto flex flex-col gap-4">
-                <div class="w-8 h-8 rounded-full border border-white/10 bg-gold/10 flex items-center justify-center text-gold font-serif text-xs">A</div>
-            </div>
-        </aside>
-
-        <main class="flex-1 overflow-y-auto p-6 relative">
+        <nav class="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+            <div class="px-3 mb-2 text-[10px] font-mono text-slate-500 uppercase tracking-widest">Controle Principal</div>
             
-            <div id="view-main" class="space-y-6 opacity-100 transition-opacity duration-500">
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="glass-panel rounded-xl p-5 hover:border-gold/30 transition-colors group">
-                        <div class="texture-overlay"></div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Fase Atual</h3>
-                                <div class="text-2xl font-bold text-white mt-1 group-hover:text-gold transition-colors">1. ORGANIZAÇÃO</div>
-                            </div>
-                            <i class="fa-solid fa-layer-group text-gold/50 group-hover:text-gold group-hover:scale-110 transition-transform"></i>
-                        </div>
-                        <div class="relative pt-2">
-                            <div class="flex justify-between text-[10px] text-slate-400 mb-1"><span>Progresso</span><span>62.5%</span></div>
-                            <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-yellow-600 to-gold w-[62.5%] shadow-[0_0_10px_#FFD700]"></div>
-                            </div>
-                        </div>
-                    </div>
+            <button onclick="router('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-3 px-4 py-3 text-slate-400 rounded-r-lg group">
+                <i class="fa-solid fa-chart-pie w-5 text-center group-hover:text-cyan transition-colors"></i>
+                <span class="font-medium">Dashboard Geral</span>
+            </button>
 
-                    <div class="glass-panel rounded-xl p-5 hover:border-cyan/30 transition-colors group">
-                        <div class="texture-overlay"></div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Inventário</h3>
-                                <div class="text-2xl font-bold text-white mt-1 group-hover:text-cyan transition-colors" id="kpi-files">5,114</div>
-                            </div>
-                            <i class="fa-solid fa-hard-drive text-cyan/50 group-hover:text-cyan group-hover:scale-110 transition-transform"></i>
-                        </div>
-                         <div class="flex gap-2 mt-3">
-                            <span class="px-2 py-0.5 rounded bg-cyan/10 border border-cyan/20 text-[9px] text-cyan font-mono">DRIVE</span>
-                            <span class="px-2 py-0.5 rounded bg-slate-800 border border-white/5 text-[9px] text-slate-400 font-mono">LOCAL</span>
-                        </div>
-                    </div>
+            <button onclick="router('inventory')" id="nav-inventory" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-400 rounded-r-lg group">
+                <i class="fa-solid fa-server w-5 text-center group-hover:text-cyan transition-colors"></i>
+                <span class="font-medium">Banco de Dados</span>
+            </button>
 
-                    <div class="glass-panel rounded-xl p-5 hover:border-danger/30 transition-colors group">
-                        <div class="texture-overlay"></div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Core Status</h3>
-                                <div class="text-2xl font-bold text-danger mt-1">INEXISTENTE</div>
-                            </div>
-                            <i class="fa-solid fa-lock text-danger/50 group-hover:text-danger group-hover:scale-110 transition-transform"></i>
-                        </div>
-                        <div class="text-[10px] text-slate-500 mt-2 font-mono border-l-2 border-danger pl-2">
-                            Aguardando conclusão da Fase 3 para geração do Snapshot.
-                        </div>
-                    </div>
+            <button onclick="router('timeline')" id="nav-timeline" class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-400 rounded-r-lg group">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center group-hover:text-gold transition-colors"></i>
+                <span class="font-medium">Linha do Tempo</span>
+            </button>
 
-                    <div class="glass-panel rounded-xl p-5 hover:border-success/30 transition-colors group">
-                        <div class="texture-overlay"></div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-slate-400 text-[10px] font-mono uppercase tracking-widest">Saúde Sistema</h3>
-                                <div class="text-2xl font-bold text-success mt-1">ONLINE</div>
-                            </div>
-                            <i class="fa-solid fa-heart-pulse text-success/50 group-hover:text-success group-hover:scale-110 transition-transform"></i>
-                        </div>
-                        <div class="flex items-center gap-2 mt-2">
-                             <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-                             <span class="text-[10px] text-slate-400">Todos os módulos operacionais</span>
-                        </div>
-                    </div>
+            <div class="px-3 mt-6 mb-2 text-[10px] font-mono text-slate-500 uppercase tracking-widest">Inteligência</div>
+            
+            <button class="nav-item w-full flex items-center gap-3 px-4 py-3 text-slate-600 rounded-r-lg cursor-not-allowed opacity-70">
+                <i class="fa-solid fa-brain w-5 text-center"></i>
+                <span>Gemini Core (Locked)</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-white/5 bg-black/20">
+            <div class="flex justify-between text-[10px] font-mono text-slate-500 mb-1">
+                <span>RAM USAGE</span>
+                <span class="text-cyan">4.2 GB</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-cyan to-blue-600 h-full w-[35%]"></div>
+            </div>
+            <div class="mt-2 text-[10px] text-slate-600 text-center font-mono">
+                AutNew Engineer v7.0
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col relative z-10 overflow-hidden bg-void/30">
+        
+        <header class="h-16 border-b border-white/5 bg-void/50 backdrop-blur-sm flex justify-between items-center px-8">
+            <div class="flex items-center gap-6">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Fase Atual</span>
+                    <span class="text-white font-bold tracking-wide">1. ORGANIZAÇÃO</span>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-96">
-                    
-                    <div class="glass-panel rounded-xl p-6 col-span-2 flex flex-col">
-                        <div class="texture-overlay"></div>
-                        <h3 class="font-serif text-white border-b border-white/5 pb-2 mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-area text-gold"></i> Distribuição de Dados
-                        </h3>
-                        <div class="flex-1 relative w-full h-full">
-                            <canvas id="mainChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel rounded-xl p-0 flex flex-col bg-black/80 font-mono text-xs border-l-4 border-l-gold">
-                        <div class="p-3 bg-white/5 border-b border-white/5 flex justify-between items-center">
-                            <span class="text-gold font-bold">TERMINAL: ORION_LOGS</span>
-                            <div class="flex gap-1">
-                                <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                            </div>
-                        </div>
-                        <div class="flex-1 p-4 overflow-y-auto space-y-2 text-slate-400" id="terminal-content">
-                            </div>
-                        <div class="p-2 border-t border-white/10 bg-white/5">
-                            <span class="text-success">➜</span> <span class="text-white animate-pulse">_</span>
-                        </div>
-                    </div>
+                <div class="h-6 w-px bg-white/10"></div>
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Status Core</span>
+                    <span class="text-alert font-bold tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-lock text-[10px]"></i> INEXISTENTE
+                    </span>
                 </div>
             </div>
-
-            <div id="view-data" class="hidden space-y-6">
-                <div class="glass-panel rounded-xl p-6 min-h-[80vh]">
-                    <div class="texture-overlay"></div>
-                    
-                    <div class="flex justify-between items-end mb-6">
-                        <div>
-                            <h2 class="text-3xl font-serif text-white">Inventário Global</h2>
-                            <p class="text-sm text-slate-500 font-mono mt-1">Indexação de Arquivos: Drive & Local</p>
-                        </div>
-                        <div class="relative">
-                            <input type="text" id="search-box" onkeyup="filterData()" placeholder="SEARCH_DATABASE..." 
-                                class="bg-black/50 border border-white/20 rounded text-sm px-4 py-2 w-64 text-cyan focus:border-cyan focus:outline-none font-mono placeholder-slate-700">
-                            <i class="fa-solid fa-search absolute right-3 top-3 text-slate-600 text-xs"></i>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="text-[10px] uppercase font-mono text-slate-500 border-b border-white/10 bg-white/5">
-                                <tr>
-                                    <th class="p-4">Arquivo</th>
-                                    <th class="p-4">Tipo</th>
-                                    <th class="p-4">Caminho</th>
-                                    <th class="p-4 text-right">Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm font-tech text-slate-300 divide-y divide-white/5" id="table-body">
-                                </tbody>
-                        </table>
-                    </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <div class="text-lg font-mono text-cyan glow-cyan" id="clock">00:00:00</div>
                 </div>
             </div>
+        </header>
 
-        </main>
-    </div>
+        <div id="app-view" class="flex-1 overflow-y-auto p-8 scroll-smooth">
+            </div>
+
+    </main>
 
     <script>
-        // --- 1. PARTICLES ENGINE (NEBULA) ---
-        const canvas = document.getElementById('nebula-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        const particleCount = 60; // Quantidade de partículas
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = (Math.random() * 0.5) - 0.25;
-                this.speedY = (Math.random() * 0.5) - 0.25;
-                this.color = Math.random() > 0.5 ? 'rgba(0, 240, 255,' : 'rgba(255, 215, 0,'; 
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.size > 0.2) this.size -= 0.005; // Twinkle effect
-                else this.size += 0.05;
-
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-            }
-            draw() {
-                ctx.fillStyle = this.color + (Math.random() * 0.5 + 0.2) + ')';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for(let i=0; i<particleCount; i++) particles.push(new Particle());
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for(let i=0; i<particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // --- 2. DATA HANDLER ---
+        // --- DATA LAYER ---
+        // Se o arquivo externo não carregar, usa este padrão
         const DEFAULT_DB = {
-            kpis: { progresso: 62.5, arquivos: 5114 },
-            arquivos_recentes: [
-                { nome: "Orion_Estado_Canonico.pdf", tipo: "PDF", caminho: "/AutNew/ORACULUM/" },
-                { nome: "core_oraculum.json", tipo: "JSON", caminho: "/AutNew/ORION/data/" },
-                { nome: "LOG_TECNICO.md", tipo: "MD", caminho: "/AutNew/__LOGS__/" }
-            ],
-            timeline: [
-                { time: "14:02", text: "Inventário Global finalizado com sucesso.", type: "SUCCESS" },
-                { time: "13:55", text: "Estado Canônico definido como TRAVADO.", type: "WARN" },
-                { time: "11:00", text: "Inicialização do Sistema ORION V6.", type: "INFO" }
-            ],
-            stats: [4949, 25, 33, 107]
+            kpis: { progresso: 0, total_arquivos: 0, decisoes_registradas: 0, status_core: "OFF" },
+            arquivos: [],
+            timeline: [],
+            grafico: { labels: [], dados: [] }
         };
 
         const DB = window.ORION_DB || DEFAULT_DB;
 
-        // --- 3. UI LOGIC ---
-        
-        // Clock
-        setInterval(() => {
-            document.getElementById('system-clock').innerText = new Date().toLocaleTimeString('pt-BR');
-        }, 1000);
+        // --- ROUTER & RENDERER ---
+        function router(view) {
+            // Update Menu
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('nav-' + view).classList.add('active');
 
-        // Populate Data
-        document.getElementById('kpi-files').innerText = DB.kpis.arquivos.toLocaleString();
+            const container = document.getElementById('app-view');
+            container.innerHTML = ''; // Clear
+            container.style.opacity = 0;
 
-        // Populate Terminal
-        const term = document.getElementById('terminal-content');
-        DB.timeline.forEach(log => {
-            const color = log.type === 'SUCCESS' ? 'text-green-400' : (log.type === 'WARN' ? 'text-gold' : 'text-blue-400');
-            term.innerHTML += `
-                <div class="font-mono border-l-2 border-white/10 pl-2 mb-2 hover:bg-white/5 transition-colors">
-                    <span class="text-slate-600">[${log.time}]</span> 
-                    <span class="${color}">${log.type}:</span> 
-                    ${log.text}
+            if (view === 'dashboard') renderDashboard(container);
+            if (view === 'inventory') renderInventory(container);
+            if (view === 'timeline') renderTimeline(container);
+
+            // Fade In
+            setTimeout(() => container.style.opacity = 1, 50);
+            container.style.transition = 'opacity 0.3s ease-out';
+        }
+
+        function renderDashboard(container) {
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-panel p-6 rounded-xl border-t-2 border-t-cyan">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Progresso Fase 1</span>
+                            <i class="fa-solid fa-bars-progress text-cyan/50"></i>
+                        </div>
+                        <div class="text-3xl font-light text-white mb-2">${DB.kpis.progresso}%</div>
+                        <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div class="bg-cyan h-full shadow-[0_0_10px_#00f2ff]" style="width: ${DB.kpis.progresso}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border-t-2 border-t-blue-600">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Total Arquivos</span>
+                            <i class="fa-solid fa-server text-blue-500/50"></i>
+                        </div>
+                        <div class="text-3xl font-light text-white mb-2">${DB.kpis.total_arquivos.toLocaleString()}</div>
+                        <div class="text-[10px] text-slate-500">Mapeamento Drive + Local</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border-t-2 border-t-gold">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Decisões</span>
+                            <i class="fa-solid fa-gavel text-gold/50"></i>
+                        </div>
+                        <div class="text-3xl font-light text-white mb-2">${DB.kpis.decisoes_registradas}</div>
+                        <div class="text-[10px] text-slate-500">Registradas no Core</div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border-t-2 border-t-alert">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Core Status</span>
+                            <i class="fa-solid fa-shield-halved text-alert/50"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-alert mb-2">${DB.kpis.status_core}</div>
+                        <div class="text-[10px] text-alert/70 border border-alert/20 px-2 py-1 rounded inline-block">BLOQUEIO ATIVO</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="glass-panel p-6 rounded-xl col-span-2">
+                        <h3 class="font-serif text-white mb-6 border-b border-white/5 pb-2">Distribuição de Dados</h3>
+                        <div class="h-64 w-full relative">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-0 rounded-xl overflow-hidden flex flex-col">
+                        <div class="p-4 bg-white/5 border-b border-white/5 flex justify-between items-center">
+                            <span class="font-serif text-white">System Feed</span>
+                            <div class="flex gap-1">
+                                <div class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 overflow-y-auto space-y-4 max-h-64">
+                            ${DB.timeline.slice(0, 5).map(log => `
+                                <div class="flex gap-3 items-start group">
+                                    <div class="text-[10px] font-mono text-slate-500 mt-1">${log.hora}</div>
+                                    <div class="text-xs text-slate-300 border-l border-white/10 pl-3 group-hover:border-cyan transition-colors">
+                                        <div class="font-bold text-cyan mb-0.5">${log.tipo}</div>
+                                        ${log.msg}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>
             `;
-        });
+            setTimeout(initChart, 50);
+        }
 
-        // Populate Table
-        const table = document.getElementById('table-body');
-        DB.arquivos_recentes.forEach(file => {
-            table.innerHTML += `
-                <tr class="hover:bg-white/5 transition-colors group file-row">
-                    <td class="p-4 font-bold text-white group-hover:text-gold transition-colors">${file.nome}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded border border-white/10 bg-black text-[10px] text-slate-400">${file.tipo}</span></td>
-                    <td class="p-4 font-mono text-xs text-slate-500">${file.caminho}</td>
-                    <td class="p-4 text-right"><button class="text-cyan hover:text-white transition-colors text-xs uppercase font-bold tracking-wider">Abrir <i class="fa-solid fa-arrow-right"></i></button></td>
-                </tr>
+        function renderInventory(container) {
+            container.innerHTML = `
+                <div class="glass-panel rounded-xl overflow-hidden min-h-[500px] flex flex-col">
+                    <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                        <h2 class="font-serif text-xl text-white">Inventário de Arquivos</h2>
+                        <div class="relative">
+                            <input type="text" id="search" onkeyup="filterTable()" placeholder="Filtrar dados..." class="bg-black/50 border border-white/10 rounded px-4 py-2 text-xs text-cyan focus:border-cyan outline-none w-64">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-white/5 text-[10px] uppercase font-mono text-slate-500">
+                                <tr>
+                                    <th class="p-4">Nome do Arquivo</th>
+                                    <th class="p-4">Tipo</th>
+                                    <th class="p-4">Caminho / Local</th>
+                                    <th class="p-4 text-right">Tag</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="text-xs text-slate-300 divide-y divide-white/5 font-mono">
+                                ${DB.arquivos.map(file => `
+                                    <tr class="hover:bg-white/5 transition-colors group file-row">
+                                        <td class="p-4 font-sans text-sm text-white font-medium group-hover:text-cyan transition-colors">${file.nome}</td>
+                                        <td class="p-4"><span class="px-2 py-1 rounded bg-slate-800 border border-white/10 text-[10px]">${file.tipo}</span></td>
+                                        <td class="p-4 text-slate-500 truncate max-w-xs">${file.caminho}</td>
+                                        <td class="p-4 text-right"><span class="text-gold text-[10px] border border-gold/20 px-2 py-0.5 rounded">${file.tag}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             `;
-        });
+        }
 
-        // Filter Function
-        function filterData() {
-            const val = document.getElementById('search-box').value.toLowerCase();
-            const rows = document.querySelectorAll('.file-row');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(val) ? '' : 'none';
+        function renderTimeline(container) {
+            container.innerHTML = `
+                <div class="glass-panel p-8 rounded-xl min-h-full">
+                    <h2 class="font-serif text-xl text-white mb-8 border-b border-white/5 pb-4">Cronologia Completa</h2>
+                    <div class="border-l border-white/10 ml-4 space-y-8">
+                        ${DB.timeline.map(log => `
+                            <div class="relative pl-8 group">
+                                <div class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-void border border-cyan group-hover:bg-cyan group-hover:shadow-[0_0_10px_#00f2ff] transition-all"></div>
+                                <div class="text-[10px] font-mono text-cyan mb-1">${log.hora}</div>
+                                <div class="text-sm text-white font-bold mb-1">${log.tipo}</div>
+                                <div class="text-xs text-slate-400 bg-white/5 p-3 rounded border border-white/5 group-hover:border-white/20 transition-colors">
+                                    ${log.msg}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterTable() {
+            const val = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.file-row').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
             });
         }
 
-        // View Switcher
-        function switchView(viewName) {
-            document.getElementById('view-main').classList.add('hidden');
-            document.getElementById('view-data').classList.add('hidden');
-            document.getElementById('view-' + viewName).classList.remove('hidden');
+        function initChart() {
+            const ctx = document.getElementById('mainChart');
+            if(!ctx) return;
+            
+            // Gradient Fill
+            const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(0, 242, 255, 0.5)'); // Cyan
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('nav-' + viewName).classList.add('active');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: DB.grafico.labels,
+                    datasets: [{
+                        label: 'Arquivos',
+                        data: DB.grafico.dados,
+                        backgroundColor: gradient,
+                        borderColor: '#00f2ff',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
         }
 
-        // --- 4. CHART ---
-        const ctxChart = document.getElementById('mainChart').getContext('2d');
-        const gradient = ctxChart.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(0, 240, 255, 0.4)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        // Clock
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('pt-BR');
+        }, 1000);
 
-        new Chart(ctxChart, {
-            type: 'line',
-            data: {
-                labels: ['MD', 'JSON', 'PY', 'DOCS', 'IMGS'],
-                datasets: [{
-                    label: 'Densidade de Arquivos',
-                    data: DB.stats || [10, 20, 30, 40, 50],
-                    borderColor: '#00F0FF',
-                    backgroundColor: gradient,
-                    borderWidth: 2,
-                    pointBackgroundColor: '#000',
-                    pointBorderColor: '#FFD700',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                    x: { grid: { display: false }, ticks: { color: '#64748b' } }
-                }
-            }
-        });
+        // Init
+        router('dashboard');
 
     </script>
 </body>
