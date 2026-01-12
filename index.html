@@ -1,58 +1,216 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>ORION — AutNew</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="./assets/js/core.js"></script>
+  <meta charset="UTF-8" />
+  <title>ORION • Dashboard de Gestão | AutNew</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #0b0f14;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 20px 28px;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    header span {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      padding: 12px 28px;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    nav button {
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+
+    nav button.active {
+      background: #1f2937;
+      color: #fff;
+    }
+
+    main {
+      padding: 28px;
+    }
+
+    .tab { display: none; }
+    .tab.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .ok { color: #22c55e; }
+    .warn { color: #facc15; }
+    .lock { color: #ef4444; }
+
+    pre {
+      background: #020617;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+      color: #cbd5f5;
+    }
+  </style>
 </head>
 
-<body class="bg-slate-900 text-slate-100 min-h-screen p-6">
+<body>
 
-<h1 class="text-4xl font-bold mb-2">ORION</h1>
-<p class="text-slate-400 mb-6">Sistema de Gestão e Acompanhamento Geral</p>
+<header>
+  <h1>ORION</h1>
+  <span>Sistema de Gestão e Acompanhamento • AutNew</span>
+</header>
 
-<section id="overview" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"></section>
+<nav>
+  <button class="active" onclick="openTab('overview')">Visão Geral</button>
+  <button onclick="openTab('phases')">Fases</button>
+  <button onclick="openTab('data')">Dados</button>
+</nav>
 
-<section>
-  <h2 class="text-xl font-semibold mb-2">Mapa do Projeto (CORE)</h2>
-  <div id="fases" class="space-y-3"></div>
-</section>
+<main>
 
-<section class="mt-8">
-  <h2 class="text-xl font-semibold mb-2">Último Evento</h2>
-  <pre id="log" class="bg-slate-800 p-4 rounded"></pre>
-</section>
+  <!-- VISÃO GERAL -->
+  <section id="overview" class="tab active">
+    <div class="grid">
+      <div class="card">
+        <h3>Projeto</h3>
+        <div id="projectName">—</div>
+      </div>
+      <div class="card">
+        <h3>Fase Atual</h3>
+        <div id="currentPhase">—</div>
+      </div>
+      <div class="card">
+        <h3>Progresso Global</h3>
+        <div id="progress">—</div>
+      </div>
+      <div class="card">
+        <h3>CORE</h3>
+        <div id="coreStatus">—</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Próximo Passo Permitido</h3>
+      <div id="nextStep">—</div>
+    </div>
+  </section>
+
+  <!-- FASES -->
+  <section id="phases" class="tab">
+    <div class="card">
+      <h3>Organização</h3>
+      <div class="ok">Em andamento</div>
+      <div id="orgDetails"></div>
+    </div>
+
+    <div class="card">
+      <h3>Síntese Estratégica</h3>
+      <div class="lock">Bloqueada</div>
+    </div>
+
+    <div class="card">
+      <h3>Plano Ideal (ORACULUM)</h3>
+      <div class="lock">Bloqueado</div>
+    </div>
+
+    <div class="card">
+      <h3>Execução</h3>
+      <div class="lock">Bloqueada</div>
+    </div>
+  </section>
+
+  <!-- DADOS -->
+  <section id="data" class="tab">
+    <div class="card">
+      <h3>project_state.json</h3>
+      <pre id="projectState">—</pre>
+    </div>
+
+    <div class="card">
+      <h3>timeline.json</h3>
+      <pre id="timeline">—</pre>
+    </div>
+
+    <div class="card">
+      <h3>drive_inventory.json</h3>
+      <span style="color:#9ca3af">Referência existente (inventário completo no Drive)</span>
+    </div>
+  </section>
+
+</main>
 
 <script>
-(async () => {
-  const core = await load("core");
-  const logs = await load("logs");
+  function openTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
 
-  const faseAtual = core.fases.find(f => f.status === "ativa");
+  async function loadJSON(path) {
+    const res = await fetch(path);
+    return await res.json();
+  }
 
-  document.getElementById("overview").innerHTML = `
-    <div class="bg-slate-800 p-4 rounded">Projeto<br><b>${core.projeto}</b></div>
-    <div class="bg-slate-800 p-4 rounded">Fase Atual<br><b>${faseAtual.nome}</b></div>
-    <div class="bg-slate-800 p-4 rounded">Status<br><b>${faseAtual.status}</b></div>
-    <div class="bg-slate-800 p-4 rounded">Versão CORE<br><b>${core.versao_core}</b></div>
-  `;
+  async function init() {
+    const project = await loadJSON('data/project_state.json');
+    const timeline = await loadJSON('data/timeline.json');
 
-  document.getElementById("fases").innerHTML =
-    core.fases.map(f => `
-      <div class="bg-slate-800 p-4 rounded">
-        <b>${f.nome}</b> — ${f.status}
-        <ul class="ml-4 list-disc text-sm">
-          ${f.subfases.map(s => `<li>${s.nome}</li>`).join("")}
-        </ul>
-      </div>
-    `).join("");
+    document.getElementById('projectName').innerText = project.projeto;
+    document.getElementById('currentPhase').innerText = project.fase_atual;
+    document.getElementById('progress').innerText = project.progresso_percentual + '%';
+    document.getElementById('coreStatus').innerText = project.core_existe ? 'EXISTE' : 'NÃO EXISTE';
+    document.getElementById('nextStep').innerText = project.proxima_acao || '—';
 
-  document.getElementById("log").textContent =
-    JSON.stringify(logs[logs.length - 1], null, 2);
-})();
+    document.getElementById('projectState').innerText = JSON.stringify(project, null, 2);
+    document.getElementById('timeline').innerText = JSON.stringify(timeline, null, 2);
+
+    if (project.fases?.organizacao) {
+      document.getElementById('orgDetails').innerText =
+        'Etapas concluídas: ' + project.fases.organizacao.etapas_concluidas.join(', ');
+    }
+  }
+
+  init();
 </script>
 
 </body>
