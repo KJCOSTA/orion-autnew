@@ -1,88 +1,99 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>ORION — Editor do CORE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="./assets/js/core.js"></script>
-<style>
-.dragging { opacity: 0.5; }
-</style>
 </head>
 
 <body class="bg-slate-900 text-slate-100 min-h-screen p-6">
 
-<h1 class="text-3xl font-bold mb-2">Editor do CORE — ORION</h1>
-<p class="text-slate-400 mb-6">Arraste, edite e reorganize as fases do projeto ORACULUM</p>
+<h1 class="text-3xl font-bold mb-4">Editor do CORE — ORION</h1>
 
-<div id="fases" class="space-y-4"></div>
+<textarea id="editor"
+  class="w-full h-[60vh] bg-slate-800 text-sm p-4 rounded mb-4 font-mono"></textarea>
 
-<button id="save"
- class="mt-6 bg-emerald-600 hover:bg-emerald-700 px-6 py-3 rounded font-semibold">
-💾 Salvar CORE (Drive)
+<button onclick="saveCore()"
+  class="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded font-semibold">
+  💾 Salvar CORE
 </button>
 
+<pre id="status" class="mt-4 text-sm text-slate-400"></pre>
+
 <script>
-let coreData = null;
-let dragSrc = null;
+const RAW_CORE =
+  "https://raw.githubusercontent.com/KJCOSTA/orion-data/main/data/core_oraculum.json";
 
-function render() {
-  const container = document.getElementById("fases");
-  container.innerHTML = "";
-
-  coreData.fases.forEach((fase, index) => {
-    const div = document.createElement("div");
-    div.className = "bg-slate-800 p-4 rounded cursor-move";
-    div.draggable = true;
-    div.dataset.index = index;
-
-    div.innerHTML = `
-      <div class="flex justify-between items-center">
-        <input class="bg-transparent border-b border-slate-500 text-lg font-semibold w-full mr-4"
-          value="${fase.nome}"
-          oninput="coreData.fases[${index}].nome = this.value">
-        <select class="bg-slate-700 p-1 rounded"
-          onchange="coreData.fases[${index}].status = this.value">
-          <option ${fase.status === "ativa" ? "selected" : ""}>ativa</option>
-          <option ${fase.status === "pendente" ? "selected" : ""}>pendente</option>
-          <option ${fase.status === "bloqueada" ? "selected" : ""}>bloqueada</option>
-        </select>
-      </div>
-    `;
-
-    div.addEventListener("dragstart", e => {
-      dragSrc = index;
-      div.classList.add("dragging");
-    });
-
-    div.addEventListener("dragend", e => {
-      div.classList.remove("dragging");
-    });
-
-    div.addEventListener("dragover", e => e.preventDefault());
-
-    div.addEventListener("drop", e => {
-      const targetIndex = index;
-      const moved = coreData.fases.splice(dragSrc, 1)[0];
-      coreData.fases.splice(targetIndex, 0, moved);
-      render();
-    });
-
-    container.appendChild(div);
-  });
+async function loadCore() {
+  const res = await fetch(RAW_CORE);
+  const json = await res.json();
+  document.getElementById("editor").value =
+    JSON.stringify(json, null, 2);
 }
 
-(async () => {
-  coreData = await loadCore();
-  render();
-})();
+async function saveCore() {
+  const token = prompt("Cole seu GitHub Token (repo):");
+  if (!token) return;
 
-document.getElementById("save").onclick = () => {
-  console.log("CORE atualizado:", coreData);
-  alert("✅ CORE atualizado no Drive (via Colab). Publicação é manual.");
-};
+  const content = document.getElementById("editor").value;
+  const core = JSON.parse(content);
+
+  const apiBase =
+    "https://api.github.com/repos/KJCOSTA/orion-data/contents";
+
+  const headers = {
+    "Authorization": "Bearer " + token,
+    "Accept": "application/vnd.github+json"
+  };
+
+  // 1️⃣ Atualiza core_oraculum.json
+  const shaRes = await fetch(
+    apiBase + "/data/core_oraculum.json",
+    { headers }
+  );
+  const shaJson = await shaRes.json();
+
+  await fetch(apiBase + "/data/core_oraculum.json", {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message: "ORION: atualiza CORE via editor",
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(core, null, 2)))),
+      sha: shaJson.sha
+    })
+  });
+
+  // 2️⃣ Adiciona log
+  const logRes = await fetch(
+    apiBase + "/logs/orion_logs.json",
+    { headers }
+  );
+  const logJson = await logRes.json();
+  const logs = JSON.parse(atob(logJson.content));
+
+  logs.push({
+    timestamp: new Date().toISOString(),
+    tipo: "editor",
+    mensagem: "CORE atualizado via editor visual",
+    fase: core.fases.find(f => f.status === "ativa")?.nome || "-"
+  });
+
+  await fetch(apiBase + "/logs/orion_logs.json", {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message: "ORION: log de atualização do CORE",
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(logs, null, 2)))),
+      sha: logJson.sha
+    })
+  });
+
+  document.getElementById("status").textContent =
+    "✅ CORE salvo com sucesso no orion-data";
+}
+
+loadCore();
 </script>
 
 </body>
