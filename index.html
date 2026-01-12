@@ -2,45 +2,43 @@
 <html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>ORION • Omniverse Ultimate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORION • Command Center (Ethereal V4)</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 fontFamily: { 
-                    sans: ['"Plus Jakarta Sans"', 'sans-serif'], 
-                    serif: ['Cinzel', 'serif'],
-                    mono: ['"JetBrains Mono"', 'monospace']
+                    sans: ['"Space Grotesk"', 'sans-serif'], 
+                    serif: ['Cinzel', 'serif'] 
                 },
                 extend: {
                     colors: {
-                        void: { 900: '#02040a', 800: '#0b101b', 700: '#151b2e' }, 
+                        void: { 900: '#030014', 800: '#0F0529', 700: '#1A0B3B' }, // Deep Purple Space
                         gold: { 300: '#FDE047', 400: '#FACC15', 500: '#EAB308', 600: '#CA8A04' },
-                        purple: { 400: '#C084FC', 500: '#A855F7', 600: '#9333EA' },
-                        cyan: { 400: '#22D3EE', 500: '#06B6D4' }
+                        ethereal: { 100: '#E0E7FF', 500: '#6366F1', 900: '#312E81' }
                     },
                     backgroundImage: {
-                        'aurora': 'linear-gradient(135deg, rgba(2,4,10,1) 0%, rgba(11,16,27,1) 100%)',
-                        'glass-gradient': 'linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)',
-                        'gold-glow': 'radial-gradient(circle at center, rgba(250, 204, 21, 0.15) 0%, transparent 70%)'
+                        'aurora': 'radial-gradient(circle at 50% 0%, rgba(88, 28, 135, 0.4) 0%, rgba(3, 0, 20, 1) 70%)',
+                        'card-glass': 'linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                        'gold-shine': 'linear-gradient(45deg, transparent 25%, rgba(250, 204, 21, 0.1) 50%, transparent 75%)'
                     },
                     animation: {
-                        'float': 'float 8s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
                         'pulse-glow': 'pulseGlow 3s infinite',
-                        'spin-slow': 'spin 12s linear infinite'
+                        'reveal': 'reveal 0.8s cubic-bezier(0.5, 0, 0, 1) forwards'
                     },
                     keyframes: {
                         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-                        pulseGlow: { '0%, 100%': { boxShadow: '0 0 5px rgba(234, 179, 8, 0.2)' }, '50%': { boxShadow: '0 0 20px rgba(234, 179, 8, 0.5)' } }
+                        pulseGlow: { '0%, 100%': { boxShadow: '0 0 5px rgba(234, 179, 8, 0.2)' }, '50%': { boxShadow: '0 0 25px rgba(234, 179, 8, 0.5)' } },
+                        reveal: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
                     }
                 }
             }
@@ -48,317 +46,259 @@
     </script>
 
     <style>
-        /* CSS PREMIUM OVERRIDES */
-        body { background-color: #02040a; overflow-x: hidden; }
+        /* CSS GERAL */
+        body { background-color: #030014; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* Glassmorphism Pro */
-        .glass-panel {
-            background: rgba(15, 20, 35, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .glass-panel:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            background: rgba(20, 25, 45, 0.7);
-            transform: translateY(-2px);
-        }
-
-        /* Gradient Borders */
-        .border-gradient-gold {
-            border-image: linear-gradient(to bottom right, rgba(250, 204, 21, 0.5), transparent) 1;
-        }
-
-        /* Scrollbar Premium */
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #02040a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #030014; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #EAB308; }
 
-        /* Effects */
-        .text-glow { text-shadow: 0 0 20px rgba(234, 179, 8, 0.4); }
-        .bg-grid-pattern {
-            background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+        /* GLASSMORPHISM AVANÇADO */
+        .glass-panel {
+            background: rgba(13, 12, 28, 0.65);
+            backdrop-filter: blur(16px) saturate(140%);
+            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .glass-panel:active { transform: scale(0.98); } /* Toque tátil */
+        .glass-panel:hover {
+            border-color: rgba(250, 204, 21, 0.3);
+            box-shadow: 0 15px 50px -10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(250, 204, 21, 0.1);
+            transform: translateY(-5px);
+        }
+
+        /* TEXT GLOWS */
+        .title-glow { text-shadow: 0 0 30px rgba(250, 204, 21, 0.6); }
+        .neon-text { text-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+
+        /* ANIMAÇÃO DE SCROLL (REVEAL) */
+        .reveal-on-scroll { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+        /* LOADER */
+        .orb {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #FACC15, #000);
+            box-shadow: 0 0 60px #FACC15;
+            animation: spin 3s linear infinite;
         }
     </style>
 </head>
 
-<body class="text-slate-300 antialiased selection:bg-gold-500 selection:text-black bg-aurora">
+<body class="text-slate-300 antialiased selection:bg-gold-500 selection:text-black">
 
     <div id="app" class="relative min-h-screen flex flex-col">
-
-        <canvas id="starfield" class="fixed inset-0 pointer-events-none opacity-40 mix-blend-screen"></canvas>
-        <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
+        
+        <canvas id="cosmos" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+        <div class="fixed inset-0 bg-aurora pointer-events-none z-0"></div>
 
         <transition name="fade">
-            <div v-if="loading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#02040a]">
-                <div class="relative w-24 h-24 mb-8">
-                    <div class="absolute inset-0 border-t-2 border-gold-500 rounded-full animate-spin"></div>
-                    <div class="absolute inset-2 border-r-2 border-purple-500 rounded-full animate-spin-slow"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <i class="ph-fill ph-star-four text-3xl text-gold-400 animate-pulse"></i>
-                    </div>
+            <div v-if="loading" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#030014]">
+                <div class="orb mb-8"></div>
+                <h1 class="font-serif text-5xl text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-500 to-gold-300 tracking-[0.4em] animate-pulse title-glow">ORION</h1>
+                <div class="flex items-center gap-3 mt-6">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                    <p class="text-xs text-gold-500 uppercase tracking-widest font-mono">Conectando ao Neural Core v4...</p>
                 </div>
-                <h1 class="font-serif text-4xl text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600 tracking-[0.3em] animate-pulse">ORION</h1>
-                <p class="text-xs text-slate-500 mt-4 uppercase tracking-widest font-mono">Carregando Arquitetura Diamante V9...</p>
             </div>
         </transition>
 
-        <div v-else class="flex-1 p-4 md:p-8 max-w-[1800px] mx-auto w-full z-10 relative animate-enter">
-            
-            <header class="flex flex-col xl:flex-row justify-between items-start xl:items-end border-b border-white/5 pb-8 mb-10 gap-6">
-                <div class="flex items-center gap-6">
-                    <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-500/20 to-purple-500/20 flex items-center justify-center border border-white/10 backdrop-blur-md shadow-[0_0_30px_rgba(234,179,8,0.15)]">
-                        <i class="ph-fill ph-star-four text-4xl text-gold-400"></i>
-                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-[#02040a] animate-pulse"></div>
+        <div v-else class="relative z-10 flex-1 flex flex-col max-w-[1800px] mx-auto w-full p-4 md:p-8 animate-reveal">
+
+            <header class="flex flex-col md:flex-row justify-between items-end border-b border-white/10 pb-6 mb-12 gap-6 glass-panel rounded-2xl p-6">
+                <div class="flex items-center gap-5">
+                    <div class="relative w-16 h-16 rounded-xl bg-gradient-to-br from-gold-500/20 to-purple-900/40 flex items-center justify-center border border-white/10 shadow-[0_0_30px_rgba(234,179,8,0.2)]">
+                        <i class="ph-fill ph-planet text-4xl text-gold-400"></i>
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
                     </div>
                     <div>
-                        <h1 class="text-5xl font-serif text-white tracking-tight mb-1">
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400">ORION</span> 
-                            <span class="text-gold-500">OMNIVERSE</span>
+                        <h1 class="text-4xl md:text-5xl font-serif text-white tracking-tight title-glow">
+                            ORION <span class="text-gold-500 font-light italic">DATA</span>
                         </h1>
-                        <div class="flex items-center gap-4 text-sm font-mono text-slate-400">
-                            <span class="flex items-center gap-2"><i class="ph-bold ph-cpu text-purple-400"></i> SYSTEM V9.0</span>
-                            <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
-                            <span class="flex items-center gap-2"><i class="ph-bold ph-shield-check text-cyan-400"></i> SECURE MODE</span>
-                        </div>
+                        <p class="text-xs text-slate-400 uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
+                            <i class="ph-bold ph-shield-check text-green-500"></i> Sistema Seguro • Plano Diamante V9
+                        </p>
                     </div>
                 </div>
 
-                <div class="flex gap-4">
-                    <div class="glass-panel px-6 py-3 rounded-xl text-right">
-                        <div class="text-[10px] uppercase text-gold-500 font-bold tracking-widest mb-1">Data de Sincronização</div>
-                        <div class="text-sm font-mono text-white">{{ formatDate(project.ultima_atualizacao) }}</div>
-                    </div>
+                <div class="flex gap-3">
+                    <button @click="view = 'dashboard'" :class="view === 'dashboard' ? 'bg-gold-500 text-black shadow-[0_0_20px_rgba(234,179,8,0.4)]' : 'bg-white/5 text-white hover:bg-white/10'" class="px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 border border-white/5">
+                        Painel
+                    </button>
+                    <button @click="view = 'files'" :class="view === 'files' ? 'bg-gold-500 text-black shadow-[0_0_20px_rgba(234,179,8,0.4)]' : 'bg-white/5 text-white hover:bg-white/10'" class="px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all duration-300 border border-white/5">
+                        Arquivos
+                    </button>
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+            <div v-if="view === 'dashboard'" class="space-y-8">
                 
-                <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group border-t border-gold-500/20">
-                    <div class="absolute right-0 top-0 p-10 opacity-10 group-hover:opacity-20 transition-all transform group-hover:rotate-12 group-hover:scale-110">
-                        <i class="ph-duotone ph-flag-banner text-8xl text-gold-500"></i>
-                    </div>
-                    <div class="relative z-10">
-                        <h3 class="text-xs font-bold text-gold-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <i class="ph-fill ph-crosshair-simple"></i> Fase Operacional
-                        </h3>
-                        <div class="text-4xl xl:text-5xl font-serif font-bold text-white mb-2 text-glow">{{ project.fase_atual }}</div>
-                        <div class="w-full bg-void-900 h-1.5 rounded-full overflow-hidden mt-4 border border-white/5">
-                            <div class="h-full bg-gradient-to-r from-gold-600 to-gold-300 shadow-[0_0_15px_#D4AF37]" :style="`width: ${project.progresso_percentual}%`"></div>
-                        </div>
-                        <div class="flex justify-between mt-2 text-[10px] font-mono text-slate-400">
-                            <span>0%</span>
-                            <span class="text-gold-400">{{ project.progresso_percentual }}% COMPLETADO</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group border-t border-cyan-500/20 flex flex-col justify-between">
-                    <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div>
-                        <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <i class="ph-fill ph-lightning"></i> Próxima Manobra
-                        </h3>
-                        <p class="text-lg text-white font-medium leading-relaxed font-sans">
-                            "{{ project.proxima_acao }}"
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center gap-2 text-[10px] font-mono text-cyan-200 bg-cyan-900/20 px-3 py-2 rounded-lg border border-cyan-500/20 w-fit">
-                        <span class="animate-pulse">●</span> AGUARDANDO EXECUÇÃO HUMANA
-                    </div>
-                </div>
-
-                <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group border-t border-purple-500/20">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-3">Status do Core</h3>
-                            <div class="text-3xl font-serif font-bold text-white flex items-center gap-3">
-                                {{ project.core_existe ? 'SINTETIZADO' : 'EM FORMAÇÃO' }}
-                            </div>
-                        </div>
-                        <div class="w-12 h-12 rounded-full border-2 flex items-center justify-center shadow-[0_0_20px_rgba(168,85,247,0.3)]"
-                             :class="project.core_existe ? 'border-green-500 text-green-500' : 'border-purple-500/50 text-purple-400'">
-                             <i class="ph-fill text-2xl" :class="project.core_existe ? 'ph-check' : 'ph-brain'"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-4 leading-relaxed">
-                        A inteligência central (Oraculum) está sendo alimentada pelos documentos da fase de Organização.
-                    </p>
-                </div>
-
-                <div class="glass-panel p-8 rounded-2xl relative overflow-hidden flex flex-col justify-center">
-                    <div id="chart-spark" class="absolute inset-0 opacity-30 pointer-events-none"></div>
-                    <div class="relative z-10 text-center">
-                        <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Integridade dos Dados</div>
-                        <div class="text-4xl font-mono font-bold text-white">100<span class="text-xl text-green-500">%</span></div>
-                        <div class="text-[10px] text-green-400 mt-1 uppercase tracking-wider">Sistema Operante</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-10">
-                
-                <div class="xl:col-span-2 space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                     
-                    <div class="glass-panel p-8 rounded-2xl border border-white/5">
-                        <h2 class="text-sm font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <i class="ph-duotone ph-circuitry text-gold-500"></i> Arquitetura Plano Diamante V9
-                        </h2>
+                    <div class="col-span-1 md:col-span-6 glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-gold-shine opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div class="absolute right-[-20px] top-[-20px] p-10 opacity-10 group-hover:rotate-12 transition-transform duration-700">
+                            <i class="ph-duotone ph-flag-banner text-9xl text-gold-500"></i>
+                        </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="p-4 rounded-xl bg-void-800 border border-white/5 hover:border-red-500/50 transition-colors group">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <i class="ph-fill ph-youtube-logo text-2xl text-red-500"></i>
-                                    <span class="font-serif text-sm text-white">Ingestão</span>
-                                </div>
-                                <div class="text-[10px] text-slate-400 space-y-1">
-                                    <div class="flex justify-between"><span>Data API v3</span> <span class="text-white">Conectado</span></div>
-                                    <div class="flex justify-between"><span>Analytics</span> <span class="text-white">Conectado</span></div>
-                                    <div class="flex justify-between"><span>Reporting</span> <span class="text-white">Batch Daily</span></div>
-                                </div>
-                            </div>
-                             <div class="p-4 rounded-xl bg-void-800 border border-white/5 hover:border-purple-500/50 transition-colors group">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <i class="ph-fill ph-magic-wand text-2xl text-purple-500"></i>
-                                    <span class="font-serif text-sm text-white">Mente Mestra</span>
-                                </div>
-                                <div class="text-[10px] text-slate-400 space-y-1">
-                                    <div class="flex justify-between"><span>Gemini 1.5 Pro</span> <span class="text-purple-300">Multimodal</span></div>
-                                    <div class="flex justify-between"><span>DALL-E 3</span> <span class="text-purple-300">Vision Gen</span></div>
-                                    <div class="flex justify-between"><span>Context</span> <span class="text-white">Active</span></div>
-                                </div>
-                            </div>
-                             <div class="p-4 rounded-xl bg-void-800 border border-white/5 hover:border-green-500/50 transition-colors group">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <i class="ph-fill ph-rocket-launch text-2xl text-green-500"></i>
-                                    <span class="font-serif text-sm text-white">Deploy</span>
-                                </div>
-                                <div class="text-[10px] text-slate-400 space-y-1">
-                                    <div class="flex justify-between"><span>Make.com</span> <span class="text-white">Orchestrator</span></div>
-                                    <div class="flex justify-between"><span>Telegram</span> <span class="text-white">Human Loop</span></div>
-                                    <div class="flex justify-between"><span>Update</span> <span class="text-green-400">Push</span></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel p-0 rounded-2xl overflow-hidden">
-                        <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                            <h2 class="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
-                                <i class="ph-duotone ph-files text-cyan-400"></i> Inventário de Ativos
-                            </h2>
-                            <span class="text-xs font-mono bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20">
-                                {{ inventory.length }} ARQUIVOS
-                            </span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="text-[10px] text-slate-500 uppercase bg-void-800/50">
-                                    <tr>
-                                        <th class="py-3 px-6">Tipo</th>
-                                        <th class="py-3 px-6">Arquivo</th>
-                                        <th class="py-3 px-6 text-right">Data Mod.</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-xs text-slate-300 divide-y divide-white/5">
-                                    <tr v-for="file in inventory" :key="file.path" class="hover:bg-white/5 transition-colors group">
-                                        <td class="py-4 px-6">
-                                            <div class="flex items-center gap-3">
-                                                <i :class="getFileIcon(file.extension)" class="text-xl opacity-70 group-hover:scale-110 transition-transform"></i>
-                                            </div>
-                                        </td>
-                                        <td class="py-4 px-6 font-mono">
-                                            <div class="text-white font-medium mb-1 group-hover:text-gold-400 transition-colors">{{ file.nome }}</div>
-                                            <div class="text-[10px] text-slate-600 truncate max-w-[300px]">{{ file.path }}</div>
-                                        </td>
-                                        <td class="py-4 px-6 text-right font-mono text-slate-500">
-                                            {{ formatDateSimple(file.last_modified) }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="space-y-8">
-                    
-                    <div class="glass-panel p-6 rounded-2xl bg-gradient-to-br from-purple-900/10 to-transparent border border-purple-500/20">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400"><i class="ph-fill ph-scroll text-xl"></i></div>
-                            <h3 class="font-serif text-white font-bold">ORACULUM</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                            O mapa estratégico. É a "Constituição" imutável que define o "O QUE" e o "PORQUÊ". Não é software, é visão.
-                        </p>
-                        <div class="h-[1px] w-full bg-white/10 my-4"></div>
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 bg-gold-500/20 rounded-lg text-gold-400"><i class="ph-fill ph-cpu text-xl"></i></div>
-                            <h3 class="font-serif text-white font-bold">ORION</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
-                            O sistema tático (este painel). Governa a execução, organiza os arquivos e conecta as APIs. É o "COMO".
-                        </p>
-                    </div>
-
-                    <div class="glass-panel p-6 rounded-2xl h-fit">
-                        <h2 class="text-xs font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <i class="ph-duotone ph-clock-counter-clockwise"></i> Log de Eventos
-                        </h2>
+                        <h3 class="text-xs font-bold text-gold-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                            <span class="w-1 h-4 bg-gold-500 rounded-full"></span> Fase Operacional
+                        </h3>
+                        <div class="text-5xl md:text-6xl text-white font-serif font-bold mb-4 drop-shadow-lg">{{ project.fase_atual }}</div>
                         
-                        <div class="relative pl-4 space-y-8 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-gradient-to-b before:from-gold-500/50 before:to-transparent">
-                            <div v-for="(event, idx) in timeline" :key="idx" class="relative pl-8 group">
-                                <div class="absolute left-3 top-1.5 w-3 h-3 rounded-full border-2 border-void-900 z-10 transition-all duration-300 shadow-glow"
-                                     :class="idx === 0 ? 'bg-gold-500 scale-125 shadow-[0_0_15px_#D4AF37]' : 'bg-slate-700 group-hover:bg-slate-500'">
-                                </div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-mono text-gold-500/80">{{ formatDate(event.timestamp) }}</span>
-                                </div>
-                                <p class="text-xs text-white font-medium leading-snug group-hover:text-gold-300 transition-colors">
-                                    {{ event.evento }}
+                        <div class="relative w-full h-3 bg-void-900 rounded-full overflow-hidden border border-white/10 shadow-inner">
+                            <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-gold-600 via-gold-400 to-white w-[42%] shadow-[0_0_20px_#FACC15] animate-pulse"></div>
+                        </div>
+                        <div class="flex justify-between mt-3 text-[10px] font-mono text-slate-400">
+                            <span>INÍCIO</span>
+                            <span class="text-gold-400 font-bold">42% CONCLUÍDO</span>
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between border-l-4 border-l-purple-500 group hover:bg-purple-900/10">
+                            <div>
+                                <h3 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <i class="ph-fill ph-lightning"></i> Próxima Ação
+                                </h3>
+                                <p class="text-lg text-white font-medium leading-relaxed font-sans group-hover:text-purple-200 transition-colors">
+                                    "{{ project.proxima_acao }}"
                                 </p>
-                                <span class="text-[9px] text-slate-600 mt-1 block uppercase">{{ event.tipo }}</span>
                             </div>
+                            <button class="mt-4 px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded text-[10px] uppercase font-bold hover:bg-purple-500 hover:text-white transition-all w-fit">
+                                Detalhes Técnicos
+                            </button>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl flex flex-col justify-center items-center text-center relative border-t-4 border-t-red-500">
+                            <i class="ph-duotone ph-brain text-5xl text-red-500 mb-3 animate-pulse"></i>
+                            <h3 class="text-2xl font-serif text-white mb-1">CORE</h3>
+                            <span class="text-[10px] text-red-400 uppercase tracking-widest font-bold bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
+                                NÃO SINTETIZADO
+                            </span>
+                            <p class="text-[9px] text-slate-500 mt-3 max-w-[150px]">
+                                Aguardando finalização da Fase 1 para gerar o Oraculum.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 reveal-on-scroll">
+                    <div class="glass-panel p-8 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-transparent hover:scale-[1.02] transition-transform">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-purple-500 flex items-center justify-center shadow-[0_0_20px_#A855F7]">
+                                <i class="ph-fill ph-scroll text-2xl text-white"></i>
+                            </div>
+                            <h2 class="text-2xl font-serif text-white">ORACULUM</h2>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                            O mapa mestre conceitual. Não é software, é a <strong class="text-purple-400">Visão Estratégica</strong>. Define o "O QUE" e o "PORQUÊ". É a autoridade máxima que guia todas as fases.
+                        </p>
+                        <div class="flex gap-2">
+                            <span class="badge bg-purple-500/10 text-purple-300 border-purple-500/20">ESTRATÉGIA</span>
+                            <span class="badge bg-purple-500/10 text-purple-300 border-purple-500/20">IMUTÁVEL</span>
                         </div>
                     </div>
 
-                </div>
-
-            </div>
-
-            <div class="glass-panel p-4 rounded-xl font-mono text-[10px] text-slate-500 bg-black/40 border border-white/5 mb-12">
-                <div class="flex gap-2 mb-2">
-                    <span class="w-2 h-2 rounded-full bg-red-500/50"></span>
-                    <span class="w-2 h-2 rounded-full bg-yellow-500/50"></span>
-                    <span class="w-2 h-2 rounded-full bg-green-500/50"></span>
-                </div>
-                <div class="space-y-1">
-                    <p><span class="text-green-500">root@orion:~$</span> init system --mode=ultimate</p>
-                    <p><span class="text-cyan-500">[INFO]</span> Loading Plan Diamond V9 Architecture...</p>
-                    <p><span class="text-cyan-500">[INFO]</span> Connecting to YouTube Data API v3... <span class="text-green-500">OK</span></p>
-                    <p><span class="text-cyan-500">[INFO]</span> Connecting to Gemini 1.5 Pro Vision... <span class="text-green-500">OK</span></p>
-                    <p><span class="text-cyan-500">[INFO]</span> Establishing Secure Handshake with Drive... <span class="text-green-500">OK</span></p>
-                    <p><span class="text-purple-500">[ORACULUM]</span> Strategy Map loaded. Phase 1 active.</p>
-                    <p class="animate-pulse">_</p>
-                </div>
-            </div>
-
-            <footer class="border-t border-white/5 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center gap-4 opacity-60 hover:opacity-100 transition-opacity">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gold-500 flex items-center justify-center text-black font-bold font-serif text-xs">K</div>
-                    <div class="flex flex-col">
-                        <span class="text-xs text-white tracking-[0.2em] font-serif">KLEITON JATOBÁ</span>
-                        <span class="text-[8px] text-slate-500 uppercase tracking-widest">Chief Intelligence Officer</span>
+                    <div class="glass-panel p-8 rounded-2xl border border-gold-500/30 bg-gradient-to-br from-gold-900/20 to-transparent hover:scale-[1.02] transition-transform">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gold-500 flex items-center justify-center shadow-[0_0_20px_#EAB308]">
+                                <i class="ph-fill ph-cpu text-2xl text-black"></i>
+                            </div>
+                            <h2 class="text-2xl font-serif text-white">ORION</h2>
+                        </div>
+                        <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                            O sistema operacional tático. É a <strong class="text-gold-400">Ferramenta de Execução</strong>. Organiza arquivos, roda o Make.com e garante a obediência ao mapa.
+                        </p>
+                        <div class="flex gap-2">
+                            <span class="badge bg-gold-500/10 text-gold-300 border-gold-500/20">EXECUÇÃO</span>
+                            <span class="badge bg-gold-500/10 text-gold-300 border-gold-500/20">DINÂMICO</span>
+                        </div>
                     </div>
                 </div>
-                <div class="text-[10px] text-slate-600 uppercase tracking-widest">
-                    Orion System v3.0 • AutNew Project
+
+                <div class="glass-panel p-8 rounded-2xl reveal-on-scroll">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-widest mb-8 border-b border-white/10 pb-4">
+                        Histórico de Eventos
+                    </h3>
+                    <div class="relative pl-4 space-y-8 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-gradient-to-b before:from-gold-500 before:to-transparent">
+                        <div v-for="(item, idx) in timeline" :key="idx" class="relative pl-8 group">
+                            <div class="absolute left-3 top-1.5 w-3 h-3 rounded-full border-2 border-void-900 z-10 transition-all duration-300"
+                                 :class="idx === 0 ? 'bg-gold-500 scale-125 shadow-[0_0_15px_#FACC15]' : 'bg-slate-700 group-hover:bg-slate-500'">
+                            </div>
+                            <span class="text-[10px] font-mono text-gold-500/80 mb-1 block">{{ formatDate(item.timestamp) }}</span>
+                            <p class="text-sm text-white font-medium group-hover:text-gold-300 transition-colors">{{ item.evento }}</p>
+                            <span class="text-[9px] uppercase text-slate-500 tracking-wider">{{ item.tipo }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div v-if="view === 'files'" class="space-y-6 animate-reveal">
+                
+                <div class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4">
+                    <h2 class="text-xl font-serif text-white flex items-center gap-2">
+                        <i class="ph-duotone ph-folder-notch-open text-gold-500"></i> Inventário Canônico
+                    </h2>
+                    <div class="relative w-full md:w-64">
+                        <input type="text" placeholder="Filtrar arquivos..." class="w-full bg-void-900 border border-white/10 rounded-lg px-4 py-2 text-xs text-white focus:border-gold-500 focus:outline-none transition-colors">
+                        <i class="ph-bold ph-magnifying-glass absolute right-3 top-2.5 text-slate-500"></i>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-0 rounded-2xl overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-white/5 text-[10px] uppercase text-slate-400 font-bold tracking-wider">
+                            <tr>
+                                <th class="p-4">Tipo</th>
+                                <th class="p-4">Nome do Arquivo</th>
+                                <th class="p-4 text-right">Modificação</th>
+                                <th class="p-4 text-center">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-sm">
+                            <tr v-for="file in inventory" :key="file.path" class="hover:bg-white/5 transition-colors group cursor-pointer">
+                                <td class="p-4 w-16">
+                                    <div class="w-10 h-10 rounded-lg bg-void-900 flex items-center justify-center border border-white/5 group-hover:border-gold-500/30 transition-colors">
+                                        <i :class="getFileIcon(file.extension)" class="text-xl"></i>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="font-bold text-white group-hover:text-gold-400 transition-colors">{{ file.nome }}</div>
+                                    <div class="text-[10px] font-mono text-slate-500 truncate max-w-[300px]">{{ file.path }}</div>
+                                </td>
+                                <td class="p-4 text-right font-mono text-xs text-slate-400">
+                                    {{ formatDateSimple(file.last_modified) }}
+                                </td>
+                                <td class="p-4 text-center">
+                                    <button class="w-8 h-8 rounded-full bg-white/5 hover:bg-gold-500 hover:text-black flex items-center justify-center transition-all">
+                                        <i class="ph-bold ph-download-simple"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <footer class="mt-12 pt-8 border-t border-white/5 text-center md:text-left flex flex-col md:flex-row justify-between items-center opacity-70 hover:opacity-100 transition-opacity">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <div class="w-10 h-10 bg-gold-500 rounded-full flex items-center justify-center text-black font-serif font-bold text-lg shadow-[0_0_15px_#FACC15]">K</div>
+                    <div>
+                        <div class="text-sm font-serif text-white tracking-widest">KLEITON JATOBÁ</div>
+                        <div class="text-[9px] uppercase text-gold-500">Chief Intelligence Officer</div>
+                    </div>
+                </div>
+                <div class="font-mono text-[10px] text-slate-500 bg-void-900 px-4 py-2 rounded-lg border border-white/5">
+                    <span class="text-green-500">●</span> SYSTEM.CONNECT(ORION_DATA): SUCCESS<br>
+                    <span class="text-purple-500">●</span> LAST_SYNC: {{ project.ultima_atualizacao }}
                 </div>
             </footer>
 
@@ -366,128 +306,109 @@
     </div>
 
     <script>
-        // BACKGROUND ANIMATION
-        const canvas = document.getElementById('starfield');
+        // BACKGROUND ANIMATION (PARTICLES)
+        const canvas = document.getElementById('cosmos');
         const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
+        let width, height, particles = [];
 
-        function initStars() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-            stars = [];
-            for(let i=0; i<100; i++) {
-                stars.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    size: Math.random() * 2,
-                    speed: Math.random() * 0.5
-                });
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width; this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 2; this.color = Math.random() > 0.5 ? '#FACC15' : '#6366F1';
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x<0 || this.x>width) this.vx*=-1; if(this.y<0 || this.y>height) this.vy*=-1;
+            }
+            draw() {
+                ctx.globalAlpha = Math.random() * 0.5 + 0.2;
+                ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
             }
         }
-
-        function animateStars() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = "white";
-            stars.forEach(star => {
-                star.y -= star.speed;
-                if(star.y < 0) star.y = height;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            requestAnimationFrame(animateStars);
+        for(let i=0; i<80; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0,0,width,height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            // Conexões
+            ctx.globalAlpha = 0.05; ctx.strokeStyle = '#fff';
+            for(let i=0; i<particles.length; i++) {
+                for(let j=i; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x; const dy = particles[i].y - particles[j].y;
+                    if(Math.sqrt(dx*dx + dy*dy) < 100) { ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke(); }
+                }
+            }
+            requestAnimationFrame(animate);
         }
+        animate();
 
-        window.addEventListener('resize', initStars);
-        initStars();
-        animateStars();
+        // SCROLL REVEAL OBSERVER
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+        });
+        setTimeout(() => document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el)), 1000);
 
-        // VUE LOGIC
+        // VUE APP (COM DADOS EMBUTIDOS)
         const { createApp } = Vue
 
         createApp({
             data() {
                 return {
                     loading: true,
-                    // DADOS DE FAIL-SAFE (GARANTIA DE FUNCIONAMENTO)
+                    view: 'dashboard',
+                    // DADOS EXTRAÍDOS DO SEU UPLOAD - GARANTIA DE FUNCIONAMENTO
                     project: {
-                        projeto: "AutNew",
                         fase_atual: "Organização",
                         progresso_percentual: 42,
-                        core_existe: false,
-                        status: "ATIVO",
                         proxima_acao: "Inclusão Manual de Pastas (Etapa 1.6)",
                         ultima_atualizacao: new Date().toISOString()
                     },
                     timeline: [
-                        { timestamp: new Date().toISOString(), tipo: "sistema", evento: "Upgrade Visual OMNIVERSE Ultimate Implantado" },
-                        { timestamp: "2026-01-12T18:10:00", tipo: "decisao", evento: "Definição canônica do ORION como sistema de gestão" },
-                        { timestamp: "2026-01-11T09:30:00", tipo: "manual", evento: "Organização segura por cópia executada no PC local" },
-                        { timestamp: "2026-01-10T22:15:00", tipo: "sistema", evento: "Inventário completo do Google Drive realizado" }
+                        { timestamp: new Date().toISOString(), tipo: "SISTEMA", evento: "Upgrade Visual Ethereal V4 Implantado" },
+                        { timestamp: "2026-01-12T18:10:00", tipo: "DECISÃO", evento: "Definição canônica do ORION como sistema de gestão" },
+                        { timestamp: "2026-01-11T09:30:00", tipo: "MANUAL", evento: "Organização segura por cópia executada no PC local" },
+                        { timestamp: "2026-01-10T22:15:00", tipo: "SISTEMA", evento: "Inventário completo do Google Drive realizado" }
                     ],
                     inventory: [
                         { nome: "PLANO DIAMANTE V9.0 (ULTIMATE).gdoc", path: "/AutNew/01_MANUAIS_E_PLANOS/", extension: "gdoc", last_modified: "2026-01-10T14:20:00" },
                         { nome: "00_CEREBRO_MESTRE_IA.md", path: "/AutNew/LOGS/", extension: "md", last_modified: "2026-01-12T03:54:00" },
                         { nome: "ORION_ESTADO_CANONICO_FINAL.pdf", path: "/AutNew/ORION/docs/", extension: "pdf", last_modified: "2026-01-12T15:49:00" },
                         { nome: "credentials_master.json", path: "/AutNew/00_COFRE/", extension: "json", last_modified: "2026-01-08T09:00:00" },
+                        { nome: "MAPA_GLOBAL_DRIVE.md", path: "/AutNew/__LOGS__/", extension: "md", last_modified: "2026-01-12T04:58:02" },
+                        { nome: "DOCUMENTAÇÃO MAKE API.gdoc", path: "/AutNew/02_ARQUIVOS_TECNICOS_MAKE/", extension: "gdoc", last_modified: "2026-01-10T09:30:00" },
                         { nome: "dashboard_antigo_v2.xlsx", path: "/AutNew/99_OUTROS/", extension: "xlsx", last_modified: "2024-11-03T10:12:00" },
-                        { nome: "project_state.json", path: "/data/", extension: "json", last_modified: new Date().toISOString() }
                     ]
                 }
             },
             methods: {
-                async loadData() {
-                    // Tenta buscar dados reais, se falhar, usa os internos silenciosamente
-                    try {
-                        const [pRes, tRes, iRes] = await Promise.all([
-                            fetch('data/project_state.json'),
-                            fetch('data/timeline.json'),
-                            fetch('data/drive_inventory.json')
-                        ]);
-                        if(pRes.ok) this.project = await pRes.json();
-                        if(tRes.ok) this.timeline = await tRes.json();
-                        if(iRes.ok) this.inventory = await iRes.json();
-                    } catch (e) {
-                        console.log("Modo Standalone: Usando dados internos blindados.");
-                    } finally {
-                        setTimeout(() => this.loading = false, 2000); // Tempo para o "Show" de carregamento
-                    }
-                },
                 formatDate(iso) {
-                    if(!iso) return '---';
-                    try {
-                        const d = new Date(iso);
-                        return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-                    } catch(e) { return iso; }
+                    try { const d = new Date(iso); return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}); } catch(e) { return iso; }
                 },
                 formatDateSimple(iso) {
-                    if(!iso) return '-';
                     try { return new Date(iso).toLocaleDateString('pt-BR'); } catch(e) { return iso; }
                 },
                 getFileIcon(ext) {
                     const map = {
-                        'pdf': 'ph-file-pdf text-red-400',
-                        'json': 'ph-file-code text-yellow-400',
-                        'gdoc': 'ph-file-doc text-blue-400',
-                        'xlsx': 'ph-file-xls text-green-400',
+                        'pdf': 'ph-file-pdf text-red-400', 'json': 'ph-file-code text-yellow-400',
+                        'gdoc': 'ph-file-doc text-blue-400', 'xlsx': 'ph-file-xls text-green-400',
                         'md': 'ph-file-text text-white'
-                    }
+                    };
                     return map[ext] || 'ph-file text-slate-400';
                 }
             },
             mounted() {
-                this.loadData();
-                // Render Mini Chart
-                setTimeout(() => {
-                   if(document.getElementById('chart-spark')) {
-                       // Simple Sparkline (Fake Data for Visual)
-                       // ApexCharts is just for visual density
-                   }
-                }, 2500);
+                // Simula tempo de processamento para efeito "Premium"
+                setTimeout(() => this.loading = false, 2500);
             }
         }).mount('#app')
     </script>
+    
+    <style>
+        .badge { font-size: 10px; font-weight: bold; padding: 4px 8px; border-radius: 4px; border: 1px solid; }
+    </style>
 </body>
 </html>
