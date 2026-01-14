@@ -1,0 +1,101 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Book, CheckCircle, Circle, Download, Edit3, Lock, Search, 
+  ChevronRight, ChevronDown, Save, Cpu, Layers, Terminal, 
+  Share2, BarChart3, Layout, ShieldCheck, PlayCircle, FileText, 
+  AlertTriangle, CheckSquare, Zap, Copy, Menu, X, Sparkles, Feather,
+  Database, Globe, Moon, Sun, ArrowLeft, MoreVertical, Home,
+  Target, TrendingUp, Calendar, Clock, User, Activity, FileJson
+} from 'lucide-react';
+
+// --- ESTILOS GLOBAIS (Color Grade: Celestial Deep) ---
+const GlobalStyles = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      /* --- PALETA DE FUNDO (Deep Navy Universe) --- */
+      --universe-bg: #020408; /* Quase preto, levemente azul */
+      --navy-deep: #0f1219;
+      --navy-card: rgba(20, 25, 40, 0.6);
+      
+      /* --- ACENTOS (Sofisticados, não neon) --- */
+      /* Azul Etéreo (Base para botões e detalhes) */
+      --ether-blue: #6366f1; /* Indigo 500 - Mais roxo/profundo que o azul padrão */
+      --ether-glow: rgba(99, 102, 241, 0.4);
+      
+      /* Ouro Celestial (Metálico) */
+      --gold-bronze: #b45309; 
+      --gold-metal: #d97706;
+      --gold-light: #fbbf24;
+      
+      /* Status */
+      --success: #059669; /* Emerald 600 (mais escuro/sóbrio) */
+      --editing: #3b82f6; /* Blue 500 */
+      
+      /* Vidro (Glassmorphism) */
+      --glass-panel: rgba(15, 20, 35, 0.75); /* Azulado escuro */
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-shine: rgba(255, 255, 255, 0.03);
+    }
+
+    body {
+      background-color: var(--universe-bg);
+      /* Gradiente de fundo sutil (Nebulosa) */
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(30, 41, 59, 0.4) 0%, transparent 60%),
+        radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 15% 80%, rgba(217, 119, 6, 0.05) 0%, transparent 40%);
+      color: #cbd5e1; /* Slate 300 (Texto mais suave que branco puro) */
+      font-family: 'Inter', sans-serif;
+      overflow: hidden; 
+    }
+
+    h1, h2, h3, h4, .font-display { font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+    /* --- COMPONENTES VISUAIS --- */
+
+    /* Painéis de Vidro (Mais profundos) */
+    .glass-deep {
+      background: var(--glass-panel);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-right: 1px solid var(--glass-border);
+      box-shadow: 20px 0 40px rgba(0,0,0,0.3);
+    }
+
+    /* Cards Premium (Gradiente sutil) */
+    .card-celestial {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-celestial:hover {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      border-color: rgba(99, 102, 241, 0.3); /* Brilho Indigo no hover */
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Botão Dourado (Ação Principal) */
+    .btn-gold-premium {
+      background: linear-gradient(135deg, var(--gold-bronze) 0%, var(--gold-metal) 100%);
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 4px 15px rgba(217, 119, 6, 0.2);
+      transition: all 0.3s ease;
+    }
+    .btn-gold-premium:hover {
+      background: linear-gradient(135deg, var(--gold
